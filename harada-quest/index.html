@@ -437,30 +437,56 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
 }
 @media (min-width: 1100px) { .desktop-grid { gap: 32px; } }
 
-/* ===== SETTINGS MODAL ===== */
+/* ===== SETTINGS FULL SCREEN ===== */
 .settings-overlay {
   position: fixed; inset: 0; z-index: 2000;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(240, 237, 228, 0.96); backdrop-filter: blur(8px);
+  background: var(--bg);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
   animation: overlayIn 0.3s ease;
 }
-.settings-card {
-  background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius);
-  padding: 28px 24px; max-width: 380px; width: calc(100% - 40px);
+.settings-inner {
+  max-width: 520px; margin: 0 auto; padding: 20px 20px 40px;
+}
+.settings-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
 }
 .settings-title {
-  font-family: var(--font-hand); font-size: 1.4rem; color: var(--ink);
-  font-weight: 700; margin-bottom: 6px;
+  font-family: var(--font-hand); font-size: 1.6rem; color: var(--ink); font-weight: 700;
 }
-.settings-desc { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.4; }
-.settings-label { font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); margin-bottom: 6px; }
+.settings-close {
+  width: 34px; height: 34px; border-radius: 10px; border: 2px solid var(--border);
+  background: var(--bg-card); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.settings-close:active { transform: scale(0.93); }
+.settings-close svg { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+.settings-section {
+  background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius);
+  padding: 18px; margin-bottom: 14px;
+}
+.settings-section-title {
+  font-family: var(--font-hand); font-size: 1.15rem; color: var(--ink);
+  font-weight: 700; margin-bottom: 12px;
+}
+.settings-label {
+  font-family: var(--font-display); font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); margin-bottom: 5px;
+}
 .settings-input {
-  width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm);
-  font-family: var(--font-body); font-size: 0.85rem; background: var(--bg);
+  width: 100%; padding: 9px 12px; border: 2px solid var(--border); border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.82rem; background: var(--bg);
   color: var(--text); outline: none; transition: border-color 0.2s;
 }
 .settings-input:focus { border-color: var(--ink); }
 .settings-input::placeholder { color: var(--text-muted); }
+.settings-input-sm {
+  padding: 7px 10px; font-size: 0.78rem; border: 2px solid var(--border);
+  border-radius: 8px; font-family: var(--font-body); background: var(--bg);
+  color: var(--text); outline: none; width: 100%;
+}
+.settings-input-sm:focus { border-color: var(--ink); }
+.settings-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; margin-top: 4px; }
 .settings-btns { display: flex; gap: 8px; margin-top: 16px; }
 .settings-btn {
   flex: 1; padding: 10px; border-radius: var(--radius-sm); border: 2px solid var(--border);
@@ -473,7 +499,37 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
 .settings-status { font-size: 0.72rem; margin-top: 10px; font-weight: 500; }
 .settings-status.ok { color: var(--success); }
 .settings-status.err { color: var(--red); }
-.settings-cost { font-size: 0.68rem; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+
+/* Area accordion in settings */
+.settings-area-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer;
+}
+.settings-area-row:last-child { border-bottom: none; }
+.settings-area-icon { width: 22px; height: 22px; flex-shrink: 0; }
+.settings-area-name {
+  font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; flex: 1;
+}
+.settings-area-chevron { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; transition: transform 0.2s; }
+.settings-area-chevron.open { transform: rotate(90deg); }
+.settings-area-tasks {
+  display: none; padding: 10px 0 6px 32px;
+}
+.settings-area-tasks.open { display: block; }
+.settings-task-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.settings-task-row input { flex: 1; }
+.settings-task-freq {
+  width: 90px; padding: 7px 6px; font-size: 0.72rem; border: 2px solid var(--border);
+  border-radius: 8px; font-family: var(--font-body); background: var(--bg);
+  color: var(--text); outline: none;
+}
+.settings-task-xp {
+  width: 50px; padding: 7px 6px; font-size: 0.72rem; border: 2px solid var(--border);
+  border-radius: 8px; font-family: var(--font-body); background: var(--bg);
+  color: var(--text); outline: none; text-align: center;
+}
 
 /* Settings gear button */
 .settings-gear {
@@ -778,7 +834,7 @@ function icon(name, size=24) {
 }
 
 // ===== DATA =====
-const AREAS = [
+const DEFAULT_AREAS = [
   { id:'leadership', name:'Leadership', iconKey:'leadership', color:'#2563EB' },
   { id:'creative',   name:'Creative Voice', iconKey:'creative', color:'#9333EA' },
   { id:'craft',      name:'Craft', iconKey:'craft', color:'#E07B2E' },
@@ -789,7 +845,7 @@ const AREAS = [
   { id:'mind',       name:'Mind', iconKey:'mind', color:'#7C3AED' },
 ];
 
-const TASKS = [
+const DEFAULT_TASKS = [
   { id:'lead-01', areaId:'leadership', title:'Practice giving better feedback & direction', frequency:'weekly', baseXP:15 },
   { id:'lead-02', areaId:'leadership', title:'Have a 1:1 meeting with a new person', frequency:'monthly', baseXP:50, isBoss:true },
   { id:'lead-03', areaId:'leadership', title:'2hr pause before responding to bad behavior', frequency:'daily', baseXP:5 },
@@ -855,6 +911,10 @@ const TASKS = [
   { id:'mnd-08', areaId:'mind', title:'Take one class', frequency:'weekly', baseXP:15 },
   { id:'mnd-09', areaId:'mind', title:'5hr phone free block', frequency:'weekly', baseXP:15 },
 ];
+
+// Load customized areas/tasks from localStorage or use defaults
+let AREAS = (() => { try { const s = localStorage.getItem('harada-quest-areas'); return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_AREAS)); } catch(e) { return JSON.parse(JSON.stringify(DEFAULT_AREAS)); } })();
+let TASKS = (() => { try { const s = localStorage.getItem('harada-quest-tasks'); return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_TASKS)); } catch(e) { return JSON.parse(JSON.stringify(DEFAULT_TASKS)); } })();
 
 // ===== STATE =====
 const STATE_KEY = 'harada-quest-state';
@@ -1205,29 +1265,74 @@ function showSettings() {
   const goal = state.mainGoal || '';
   const overlay = document.createElement('div');
   overlay.className = 'settings-overlay';
-  overlay.innerHTML = `<div class="settings-card" style="max-height:90vh;overflow-y:auto;">
-    <div class="settings-title">Settings</div>
 
-    <div class="settings-label" style="margin-top:14px">Main Goal</div>
-    <input class="settings-input" id="settingsGoalInput" type="text" placeholder="Your main Harada goal..." value="${goal}" />
-    <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">The center of your Harada grid — what everything feeds into.</div>
+  // Build areas + tasks sections
+  const areasHTML = AREAS.map((area, ai) => {
+    const tasks = TASKS.filter(t => t.areaId === area.id);
+    return `<div>
+      <div class="settings-area-row" onclick="this.querySelector('.settings-area-chevron').classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+        <div class="settings-area-icon">${icon(area.iconKey, 22)}</div>
+        <div class="settings-area-name">${area.name}</div>
+        <svg class="settings-area-chevron" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+      <div class="settings-area-tasks">
+        <div style="margin-bottom:8px">
+          <div class="settings-label">Area Name</div>
+          <input class="settings-input-sm" data-area-idx="${ai}" data-field="name" value="${area.name}" />
+        </div>
+        <div class="settings-label" style="margin-top:10px">Tasks</div>
+        ${tasks.map((t, ti) => `<div class="settings-task-row">
+          <input class="settings-input-sm" data-task-id="${t.id}" data-field="title" value="${t.title}" />
+          <select class="settings-task-freq" data-task-id="${t.id}" data-field="frequency">
+            <option value="daily" ${t.frequency==='daily'?'selected':''}>Daily</option>
+            <option value="weekly" ${t.frequency==='weekly'?'selected':''}>Weekly</option>
+            <option value="monthly" ${t.frequency==='monthly'?'selected':''}>Monthly</option>
+            <option value="quarterly" ${t.frequency==='quarterly'?'selected':''}>Quarterly</option>
+          </select>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
 
-    <div class="settings-label" style="margin-top:18px">Sensei API Key</div>
-    <div class="settings-desc" style="margin-bottom:8px">Enter your Anthropic API key to enable the Sensei. Stored only on this device.</div>
-    <input class="settings-input" id="settingsKeyInput" type="password" placeholder="sk-ant-..." value="${key}" />
-    ${key ? `<div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Current: ${masked}</div>` : ''}
-    <div id="settingsStatus"></div>
+  overlay.innerHTML = `<div class="settings-inner">
+    <div class="settings-header">
+      <div class="settings-title">Settings</div>
+      <div class="settings-close" onclick="this.closest('.settings-overlay').remove()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Main Goal</div>
+      <input class="settings-input" id="settingsGoalInput" type="text" placeholder="Your main Harada goal..." value="${goal}" />
+      <div class="settings-desc">The center of your Harada grid — what everything feeds into.</div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Areas & Tasks</div>
+      <div class="settings-desc" style="margin-bottom:12px">Tap an area to edit its name and tasks.</div>
+      ${areasHTML}
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Sensei</div>
+      <div class="settings-label">API Key</div>
+      <input class="settings-input" id="settingsKeyInput" type="password" placeholder="sk-ant-..." value="${key}" />
+      ${key ? `<div class="settings-desc">Current: ${masked}</div>` : ''}
+      <div class="settings-desc">Your key is stored only on this device. Each request ~$0.01.</div>
+      <div id="settingsStatus"></div>
+    </div>
+
     <div class="settings-btns">
       <button class="settings-btn" onclick="this.closest('.settings-overlay').remove()">Cancel</button>
-      <button class="settings-btn primary" onclick="handleSaveSettings()">Save</button>
+      <button class="settings-btn primary" onclick="handleSaveSettings()">Save All</button>
     </div>
-    <div class="settings-cost">Each Sensei request costs ~$0.01 with Claude Sonnet.</div>
 
-    <div style="margin-top:24px;padding-top:18px;border-top:2px solid var(--border)">
-      <div class="settings-label" style="color:var(--red)">Reset</div>
-      <div class="settings-btns" style="margin-top:8px">
-        <button class="settings-btn danger" onclick="if(confirm('Reset all XP, streaks, and completions? This cannot be undone.')){state.totalXP=0;state.areaXP=Object.fromEntries(AREAS.map(a=>[a.id,0]));state.completions={};state.streaks={};state.bossesDefeated=[];saveState();updateUI();this.closest('.settings-overlay').remove();showToast('Progress reset')}">Reset Progress</button>
-        <button class="settings-btn danger" onclick="if(confirm('Delete ALL data including API key and chat history? This cannot be undone.')){localStorage.clear();location.reload()}">Reset Everything</button>
+    <div class="settings-section" style="margin-top:14px;border-color:var(--red)">
+      <div class="settings-section-title" style="color:var(--red)">Danger Zone</div>
+      <div class="settings-btns" style="margin-top:0">
+        <button class="settings-btn danger" onclick="if(confirm('Reset all XP, streaks, and completions? Cannot be undone.')){state.totalXP=0;state.areaXP=Object.fromEntries(AREAS.map(a=>[a.id,0]));state.completions={};state.streaks={};state.bossesDefeated=[];saveState();updateUI();this.closest('.settings-overlay').remove();showToast('Progress reset')}">Reset Progress</button>
+        <button class="settings-btn danger" onclick="if(confirm('Delete ALL data? Cannot be undone.')){localStorage.clear();location.reload()}">Reset Everything</button>
       </div>
     </div>
   </div>`;
@@ -1238,11 +1343,33 @@ async function handleSaveSettings() {
   const goalInput = document.getElementById('settingsGoalInput');
   const keyInput = document.getElementById('settingsKeyInput');
   const status = document.getElementById('settingsStatus');
-  const goal = goalInput.value.trim();
-  const key = keyInput.value.trim();
+  const goal = goalInput?.value.trim();
+  const key = keyInput?.value.trim();
 
   // Save goal
   if (goal) { state.mainGoal = goal; saveState(); }
+
+  // Save area name changes
+  document.querySelectorAll('[data-area-idx][data-field="name"]').forEach(input => {
+    const idx = parseInt(input.dataset.areaIdx);
+    if (AREAS[idx] && input.value.trim()) {
+      AREAS[idx].name = input.value.trim();
+    }
+  });
+
+  // Save task changes
+  document.querySelectorAll('[data-task-id][data-field="title"]').forEach(input => {
+    const task = TASKS.find(t => t.id === input.dataset.taskId);
+    if (task && input.value.trim()) task.title = input.value.trim();
+  });
+  document.querySelectorAll('[data-task-id][data-field="frequency"]').forEach(select => {
+    const task = TASKS.find(t => t.id === select.dataset.taskId);
+    if (task) task.frequency = select.value;
+  });
+
+  // Persist custom areas/tasks to localStorage
+  localStorage.setItem('harada-quest-areas', JSON.stringify(AREAS));
+  localStorage.setItem('harada-quest-tasks', JSON.stringify(TASKS));
 
   // Save/validate API key
   if (key && key !== getApiKey()) {
@@ -1271,6 +1398,7 @@ async function handleSaveSettings() {
   // No key change, just close
   document.querySelector('.settings-overlay')?.remove();
   updateUI();
+  showToast('Settings saved');
 }
 
 // ===== COACH: CONVERSATION =====
