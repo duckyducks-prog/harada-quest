@@ -484,45 +484,39 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
 .settings-gear svg { width: 100%; height: 100%; stroke: var(--text-muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ===== COACH VIEW ===== */
-.coach-card {
-  background: var(--bg-card); border-radius: var(--radius);
-  padding: 20px; border: 2px solid var(--border); margin-bottom: 14px;
+.coach-chat { display: flex; flex-direction: column; gap: 12px; }
+.coach-bubble {
+  max-width: 85%; padding: 14px 16px;
+  font-size: 0.88rem; line-height: 1.5; color: var(--text);
+  animation: bubbleIn 0.3s ease both;
 }
-.coach-greeting {
-  font-family: var(--font-hand); font-size: 1.15rem; color: var(--ink);
-  font-weight: 600; margin-bottom: 14px; line-height: 1.3;
+.coach-bubble.coach-msg {
+  align-self: flex-start;
+  background: var(--bg-card); border: 2px solid var(--border);
+  border-radius: 2px var(--radius) var(--radius) var(--radius);
 }
-.coach-insight {
-  background: var(--bg); border-radius: var(--radius-sm);
-  padding: 12px 14px; margin-bottom: 8px;
-  border-left: 3px solid var(--ink); display: flex; gap: 10px; align-items: flex-start;
+.coach-bubble.coach-msg:nth-child(2) { animation-delay: 0.15s; }
+.coach-bubble.coach-msg:nth-child(3) { animation-delay: 0.3s; }
+.coach-bubble.user-msg {
+  align-self: flex-end;
+  background: var(--ink); color: white;
+  border-radius: var(--radius) 2px var(--radius) var(--radius);
 }
-.coach-insight.warning { border-left-color: var(--red); }
-.coach-insight.tip { border-left-color: var(--text-muted); }
-.coach-insight-area {
-  font-family: var(--font-display); font-size: 0.68rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted);
-  margin-bottom: 3px;
+@keyframes bubbleIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+.coach-bubble strong { font-weight: 700; }
+.coach-bubble .coach-label {
+  font-family: var(--font-hand); font-size: 0.78rem; font-weight: 700;
+  color: var(--ink); margin-bottom: 4px; display: block;
 }
-.coach-insight-msg { font-size: 0.82rem; color: var(--text); line-height: 1.4; }
-.coach-focus {
-  background: var(--ink-faint); border-radius: var(--radius-sm);
-  padding: 14px 16px; margin-top: 14px;
-  border: 2px dashed var(--ink);
-}
-.coach-focus-label {
-  font-family: var(--font-hand); font-size: 0.95rem; color: var(--ink);
-  font-weight: 700; margin-bottom: 4px;
-}
-.coach-focus-msg { font-size: 0.85rem; color: var(--text); line-height: 1.4; }
-.coach-timestamp { font-size: 0.68rem; color: var(--text-muted); margin-top: 12px; text-align: center; }
+.coach-bubble.coach-msg .coach-label { color: var(--ink); }
+.coach-timestamp { font-size: 0.68rem; color: var(--text-muted); margin-top: 8px; text-align: center; }
 .coach-btn {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   width: 100%; padding: 14px;
   background: var(--ink); border: none; border-radius: var(--radius);
   font-family: var(--font-hand); font-size: 1.1rem; font-weight: 600;
   color: white; cursor: pointer; transition: transform 0.15s;
-  margin-bottom: 14px;
+  margin-top: 8px;
 }
 .coach-btn:active { transform: scale(0.97); }
 .coach-btn:disabled { opacity: 0.6; cursor: default; }
@@ -538,9 +532,10 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
 .coach-empty-desc { font-size: 0.82rem; line-height: 1.4; }
 
 /* Loading dots */
-.coach-loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 40px; }
+.coach-loading { display: flex; align-items: flex-start; gap: 8px; padding: 10px 0; }
+.coach-loading-dots { display: flex; gap: 5px; padding: 14px 18px; background: var(--bg-card); border: 2px solid var(--border); border-radius: 2px var(--radius) var(--radius) var(--radius); }
 .coach-loading-dot {
-  width: 10px; height: 10px; border-radius: 50%; background: var(--ink);
+  width: 8px; height: 8px; border-radius: 50%; background: var(--ink);
   animation: coachPulse 1.4s infinite ease-in-out both;
 }
 .coach-loading-dot:nth-child(1) { animation-delay: -0.32s; }
@@ -1068,7 +1063,7 @@ function renderDesktop() {
     </div><div class="monthly-area-pct">${comp.pct}%</div></div>`;}).join('');
   // Coach
   const dcc = document.getElementById('desktopCoachContent');
-  if (dcc) dcc.innerHTML = coachContentHTML('desktopCoachContent');
+  if (dcc) dcc.innerHTML = coachContentHTML();
 }
 
 function showDesktopAreaDetail(areaId) {
@@ -1154,6 +1149,11 @@ async function handleSaveKey() {
   }
 }
 
+// ===== COACH: CONVERSATION =====
+const COACH_HISTORY_KEY = 'harada-quest-coach-history';
+function getCoachHistory() { try { const h = localStorage.getItem(COACH_HISTORY_KEY); return h ? JSON.parse(h) : []; } catch(e) { return []; } }
+function saveCoachHistory(h) { localStorage.setItem(COACH_HISTORY_KEY, JSON.stringify(h)); }
+
 // ===== COACH: DATA GATHERING =====
 function gatherCoachingData() {
   const now = new Date();
@@ -1198,36 +1198,58 @@ function gatherCoachingData() {
 // ===== COACH: API CALL =====
 let coachLoading = false;
 
-async function fetchRecommendations() {
+const COACH_SYSTEM = `You are a personal productivity coach for a Harada Method quest system. The user tracks tasks across 8 life areas (Leadership, Creative Voice, Craft, Finance, Network, Family & Friends, Body, Mind) with daily/weekly/monthly/quarterly habits.
+
+Your style:
+- Talk like a supportive friend, casual but insightful
+- Keep messages short — 2-3 sentences max per point
+- Reference specific numbers when relevant (streaks, percentages, levels)
+- Be honest about weak spots but encouraging
+
+When giving your initial check-in (first message), say exactly TWO things:
+1. One specific action to do TODAY based on their data
+2. One area that needs more focus overall and why
+
+When answering follow-up questions, be conversational and helpful. You can reference their progress data to give specific advice.
+
+Never use bullet points or lists. Write in natural flowing sentences like a text message from a friend.`;
+
+async function sendCoachMessage(userMessage) {
   const key = getApiKey();
   if (!key) { showSettings(); return; }
   if (coachLoading) return;
+
+  const history = getCoachHistory();
+  const coachData = gatherCoachingData();
+
+  // Add user message to history
+  if (userMessage) {
+    history.push({ role: 'user', content: userMessage });
+  }
+
   coachLoading = true;
+  saveCoachHistory(history);
   updateUI();
 
-  const coachData = gatherCoachingData();
-  const systemPrompt = `You are a personal productivity coach for a gamified Harada Method quest system.
-The user tracks tasks across 8 life areas with daily/weekly/monthly/quarterly habits.
+  // Build messages array for API
+  const apiMessages = [];
 
-Rules:
-- Be concise: 3-5 insights, each 1-2 sentences
-- End with one specific "Focus for today" action
-- Tone: supportive friend, casual but insightful
-- Reference specific numbers (streaks, percentages, levels)
-- Call out imbalances between areas
-- Consider the day of week and time of day for contextual suggestions
-- Consider days left in month for urgency on monthly tasks
-- Celebrate momentum but nudge toward weak spots
-- If boss battles (monthly/quarterly tasks) are falling behind, mention them
-
-Respond ONLY with JSON:
-{
-  "greeting": "short personalized greeting",
-  "insights": [
-    { "area": "area name", "type": "strength|warning|tip", "message": "the insight" }
-  ],
-  "focusToday": "one concrete suggestion for right now"
-}`;
+  // First message always includes progress data
+  if (history.length === 0 || (history.length === 1 && !userMessage)) {
+    apiMessages.push({ role: 'user', content: 'Here is my current progress data. Give me my check-in:\n' + JSON.stringify(coachData) });
+  } else {
+    // Include data context in first message, then conversation
+    apiMessages.push({ role: 'user', content: 'Here is my progress data for context:\n' + JSON.stringify(coachData) });
+    apiMessages.push({ role: 'assistant', content: history.find(m => m.role === 'assistant')?.content || 'How can I help?' });
+    // Add remaining conversation turns (skip first assistant)
+    let skippedFirst = false;
+    for (const msg of history) {
+      if (msg.role === 'assistant' && !skippedFirst) { skippedFirst = true; continue; }
+      if (msg.role === 'assistant') apiMessages.push({ role: 'assistant', content: msg.content });
+      if (msg.role === 'user' && msg.content !== userMessage) apiMessages.push({ role: 'user', content: msg.content });
+    }
+    if (userMessage) apiMessages.push({ role: 'user', content: userMessage });
+  }
 
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1235,10 +1257,10 @@ Respond ONLY with JSON:
       headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 600,
+        max_tokens: 400,
         temperature: 0.7,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: 'Here is my current progress data:\n' + JSON.stringify(coachData) }]
+        system: COACH_SYSTEM,
+        messages: apiMessages
       })
     });
 
@@ -1253,21 +1275,8 @@ Respond ONLY with JSON:
     const data = await resp.json();
     const text = data.content?.[0]?.text || '';
 
-    // Parse JSON from response
-    let parsed;
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
-    } catch (e) { parsed = null; }
-
-    if (parsed) {
-      const cache = { data: parsed, timestamp: Date.now() };
-      localStorage.setItem(COACH_CACHE_KEY, JSON.stringify(cache));
-    } else {
-      // Fallback: show raw text
-      const cache = { data: { greeting: 'Here are my thoughts:', insights: [{ area: 'General', type: 'tip', message: text }], focusToday: '' }, timestamp: Date.now() };
-      localStorage.setItem(COACH_CACHE_KEY, JSON.stringify(cache));
-    }
+    history.push({ role: 'assistant', content: text, timestamp: Date.now() });
+    saveCoachHistory(history);
   } catch (e) {
     showToast('Network error. Check your connection.');
   }
@@ -1276,77 +1285,81 @@ Respond ONLY with JSON:
   updateUI();
 }
 
+function startNewCoachSession() {
+  saveCoachHistory([]);
+  sendCoachMessage(null);
+}
+
+function handleCoachInput(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    const input = e.target;
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    sendCoachMessage(msg);
+  }
+}
+
 // ===== COACH: RENDER =====
-function getCoachCache() {
-  try { const c = localStorage.getItem(COACH_CACHE_KEY); return c ? JSON.parse(c) : null; } catch (e) { return null; }
-}
-
-function timeAgo(ts) {
-  const diff = Date.now() - ts;
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
-}
-
-function coachContentHTML(targetId) {
+function coachContentHTML() {
   const key = getApiKey();
+  const history = getCoachHistory();
 
-  if (coachLoading) {
-    return `<div class="coach-loading"><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div></div>`;
+  if (!key) {
+    return `<div class="coach-empty">
+      <div class="coach-empty-icon">${icon('coach', 40)}</div>
+      <div class="coach-empty-title">Set up your Coach</div>
+      <div class="coach-empty-desc">Add your Anthropic API key in Settings to get AI-powered coaching.</div>
+      <button class="coach-btn" style="margin-top:16px" onclick="showSettings()">Open Settings</button>
+    </div>`;
   }
 
-  const cache = getCoachCache();
-
-  let content = '';
-
-  // Button
-  if (key) {
-    content += `<button class="coach-btn" onclick="fetchRecommendations()" ${coachLoading ? 'disabled' : ''}>
+  if (history.length === 0 && !coachLoading) {
+    return `<div class="coach-empty">
+      <div class="coach-empty-icon">${icon('coach', 40)}</div>
+      <div class="coach-empty-title">Ready when you are</div>
+      <div class="coach-empty-desc">Start a conversation with your coach for personalized advice.</div>
+    </div>
+    <button class="coach-btn" onclick="startNewCoachSession()">
       <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      ${cache ? 'Refresh Advice' : 'Get Advice'}
+      Start Check-in
     </button>`;
   }
 
-  if (!key) {
-    content += `<div class="coach-empty">
-      <div class="coach-empty-icon">${icon('coach', 40)}</div>
-      <div class="coach-empty-title">Set up your Coach</div>
-      <div class="coach-empty-desc">Add your Anthropic API key in Settings to get AI-powered coaching based on your progress.</div>
-      <button class="coach-btn" style="margin-top:16px" onclick="showSettings()">
-        <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        Open Settings
-      </button>
-    </div>`;
-    return content;
+  let html = '<div class="coach-chat">';
+
+  for (const msg of history) {
+    if (msg.role === 'assistant') {
+      html += `<div class="coach-bubble coach-msg">${msg.content}</div>`;
+    } else if (msg.role === 'user') {
+      html += `<div class="coach-bubble user-msg">${msg.content}</div>`;
+    }
   }
 
-  if (cache) {
-    const d = cache.data;
-    content += `<div class="coach-card">
-      <div class="coach-greeting">${d.greeting || 'Here are your insights:'}</div>
-      ${(d.insights || []).map(i => `<div class="coach-insight ${i.type === 'warning' ? 'warning' : i.type === 'tip' ? 'tip' : ''}">
-        <div><div class="coach-insight-area">${i.area || ''}</div><div class="coach-insight-msg">${i.message}</div></div>
-      </div>`).join('')}
-      ${d.focusToday ? `<div class="coach-focus"><div class="coach-focus-label">Focus for today</div><div class="coach-focus-msg">${d.focusToday}</div></div>` : ''}
-    </div>
-    <div class="coach-timestamp">Last updated: ${timeAgo(cache.timestamp)}</div>`;
-  } else {
-    content += `<div class="coach-empty">
-      <div class="coach-empty-icon">${icon('coach', 40)}</div>
-      <div class="coach-empty-title">Ready when you are</div>
-      <div class="coach-empty-desc">Tap "Get Advice" to get personalized coaching insights based on your current progress.</div>
+  if (coachLoading) {
+    html += `<div class="coach-loading"><div class="coach-loading-dots"><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div></div></div>`;
+  }
+
+  html += '</div>';
+
+  // Input bar for follow-up questions
+  if (!coachLoading && history.length > 0) {
+    html += `<div style="display:flex;gap:8px;margin-top:14px;align-items:center;">
+      <input class="settings-input" style="flex:1;margin:0;font-size:0.85rem;" placeholder="Ask your coach..." onkeydown="handleCoachInput(event)" />
+      <button class="coach-btn" style="width:auto;margin:0;padding:10px 14px;font-size:0.85rem;" onclick="startNewCoachSession()">New</button>
     </div>`;
   }
 
-  return content;
+  return html;
 }
 
 function renderCoach() {
   const el = document.getElementById('coachContent');
-  if (el) el.innerHTML = coachContentHTML('coachContent');
+  if (el) el.innerHTML = coachContentHTML();
+  // Scroll to bottom of chat
+  const chat = el?.querySelector('.coach-chat');
+  if (chat) chat.scrollTop = chat.scrollHeight;
 }
 
 // ===== INIT =====
