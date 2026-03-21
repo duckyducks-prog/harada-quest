@@ -437,6 +437,18 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
 }
 @media (min-width: 1100px) { .desktop-grid { gap: 32px; } }
 
+/* ===== CHECK-IN SUB-TABS ===== */
+.checkin-tab {
+  flex: 1; padding: 10px 0; background: none; border: none; cursor: pointer;
+  color: var(--text-muted); position: relative; transition: color 0.2s;
+  font-family: var(--font-body);
+}
+.checkin-tab.active { color: var(--ink); }
+.checkin-tab.active::after {
+  content: ''; position: absolute; bottom: -2px; left: 10%; right: 10%;
+  height: 3px; background: var(--ink); border-radius: 2px;
+}
+
 /* ===== SETTINGS FULL SCREEN ===== */
 .settings-overlay {
   position: fixed; inset: 0; z-index: 2000;
@@ -713,8 +725,15 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
   <div class="view" id="view-monthly"></div>
 
   <div class="view" id="view-checkin">
-    <h2 style="font-family:var(--font-hand);font-size:1.6rem;margin-bottom:4px;color:var(--ink)">Today's Quests</h2>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:18px;" id="checkinDate"></p>
+    <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid var(--border)">
+      <button class="checkin-tab active" data-checkin-tab="daily" onclick="switchCheckinTab('daily')">
+        <span style="font-family:var(--font-hand);font-size:1.1rem;font-weight:700">Daily Tasks</span>
+      </button>
+      <button class="checkin-tab" data-checkin-tab="pending" onclick="switchCheckinTab('pending')">
+        <span style="font-family:var(--font-hand);font-size:1.1rem;font-weight:700">Pending Tasks</span>
+      </button>
+    </div>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:14px;" id="checkinDate"></p>
     <div id="questList"></div>
   </div>
 
@@ -1047,9 +1066,16 @@ function taskCardHTML(task, areaColor) {
 }
 
 // Helper: area tasks grouped HTML
-function areaTasksGroupHTML(areas_list, questListId) {
+function areaTasksGroupHTML(areas_list, mode) {
   return areas_list.map(area => {
-    const tasks=TASKS.filter(t=>t.areaId===area.id);
+    let tasks;
+    if (mode === 'daily') {
+      tasks = TASKS.filter(t => t.areaId === area.id && t.frequency === 'daily');
+    } else if (mode === 'pending') {
+      tasks = TASKS.filter(t => t.areaId === area.id && t.frequency !== 'daily' && !isCompleted(t.id, t.frequency));
+    } else {
+      tasks = TASKS.filter(t => t.areaId === area.id);
+    }
     if(!tasks.length) return '';
     const done=tasks.filter(t=>isCompleted(t.id,t.frequency)).length;
     return `<div style="margin-bottom:14px">
@@ -1144,9 +1170,19 @@ function renderMonthly() {
 }
 
 // ----- Mobile: Check-in -----
+let activeCheckinTab = 'daily';
+function switchCheckinTab(tab) {
+  activeCheckinTab = tab;
+  document.querySelectorAll('.checkin-tab').forEach(t => t.classList.toggle('active', t.dataset.checkinTab === tab));
+  renderCheckin();
+}
 function renderCheckin() {
   document.getElementById('checkinDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('questList').innerHTML=areaTasksGroupHTML(AREAS);
+  if (activeCheckinTab === 'daily') {
+    document.getElementById('questList').innerHTML = areaTasksGroupHTML(AREAS, 'daily');
+  } else {
+    document.getElementById('questList').innerHTML = areaTasksGroupHTML(AREAS, 'pending');
+  }
 }
 
 // ----- Mobile: Stats -----
@@ -1194,7 +1230,7 @@ function renderDesktop() {
   }
   // Check-in
   document.getElementById('desktopCheckinDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  document.getElementById('desktopQuestList').innerHTML=areaTasksGroupHTML(AREAS);
+  document.getElementById('desktopQuestList').innerHTML=areaTasksGroupHTML(AREAS, 'all');
   // Bosses
   document.getElementById('desktopBossList').innerHTML=bossListHTML();
   // Stats
