@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F5F0E8">
+<title>Harada Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #F5F0E8;
+  --bg-card: #FFFFFF;
+  --text: #1A1A1A;
+  --text-secondary: #6B6560;
+  --text-muted: #A09A93;
+  --border: #E5DFD6;
+  --xp-gold: #D4A017;
+  --streak-fire: #F97316;
+  --success: #22C55E;
+  --danger: #EF4444;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9999; opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+
+.app { max-width: 480px; margin: 0 auto; padding-bottom: 90px; min-height: 100dvh; }
+
+/* ===== HEADER ===== */
+.header {
+  padding: 20px 20px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-title {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary);
+}
+.header-level {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; color: var(--xp-gold);
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 6px 14px; border-radius: 20px; border: 2px solid var(--xp-gold);
+}
+
+/* ===== GLOBAL XP BAR ===== */
+.xp-bar-container { margin: 16px 20px 0; background: var(--border); border-radius: 8px; height: 10px; overflow: hidden; }
+.xp-bar-fill {
+  height: 100%; background: linear-gradient(90deg, #F59E0B, #D97706);
+  border-radius: 8px; transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.xp-label { display: flex; justify-content: space-between; margin: 6px 20px 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+/* ===== VIEWS ===== */
+.view { display: none; padding: 20px; }
+.view.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.section-title {
+  font-family: var(--font-display); font-size: 0.8rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 14px; font-weight: 600;
+}
+
+/* ===== SWIPEABLE CARD CAROUSEL ===== */
+.carousel-wrapper { position: relative; margin-bottom: 24px; }
+
+.carousel {
+  display: flex; gap: 14px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 0 16px;
+  scrollbar-width: none;
+}
+.carousel::-webkit-scrollbar { display: none; }
+
+.area-card {
+  flex: 0 0 calc(100% - 40px);
+  scroll-snap-align: center;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative; overflow: hidden;
+  min-height: 160px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+
+.area-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+  background: var(--area-color);
+}
+
+.area-card:active { transform: scale(0.97); }
+
+.area-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+
+.area-card-icon { font-size: 2.2rem; }
+
+.area-card-level-badge {
+  font-family: var(--font-display); font-size: 0.75rem; font-weight: 700;
+  color: white; background: var(--area-color);
+  padding: 4px 12px; border-radius: 12px;
+}
+
+.area-card-name {
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
+  margin: 12px 0 4px; color: var(--text);
+}
+
+.area-card-progress-text {
+  font-size: 0.78rem; color: var(--text-muted); font-weight: 500; margin-bottom: 10px;
+}
+
+.area-card-bar { height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.area-card-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+
+.area-card-tasks-done {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 12px; font-size: 0.78rem; color: var(--text-secondary); font-weight: 500;
+}
+
+/* Carousel dots */
+.carousel-dots {
+  display: flex; justify-content: center; gap: 6px;
+}
+.carousel-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--border); transition: all 0.3s;
+}
+.carousel-dot.active {
+  background: var(--text-muted); width: 20px; border-radius: 4px;
+}
+
+/* ===== MONTHLY PROGRESS BUTTON ===== */
+.monthly-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 16px;
+  background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-family: var(--font-display); font-size: 0.9rem; font-weight: 700;
+  color: var(--text); cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  margin-bottom: 24px;
+}
+.monthly-btn:active { transform: scale(0.97); }
+.monthly-btn svg { width: 20px; height: 20px; stroke: var(--xp-gold); fill: none; stroke-width: 2; }
+
+/* ===== AREA DETAIL VIEW ===== */
+.area-detail-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.back-btn {
+  width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: var(--bg-card); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.back-btn svg { width: 18px; height: 18px; stroke: var(--text); fill: none; stroke-width: 2.5; }
+.back-btn:active { transform: scale(0.93); }
+
+.area-detail-title {
+  font-family: var(--font-display); font-size: 1.4rem; font-weight: 700;
+}
+.area-detail-level {
+  font-size: 0.8rem; font-weight: 700; color: var(--text-muted);
+}
+
+.area-detail-xp-bar { height: 8px; background: var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 6px; }
+.area-detail-xp-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
+.area-detail-xp-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 20px; }
+
+/* ===== MONTHLY OVERVIEW ===== */
+.monthly-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 6px;
+}
+.monthly-subtitle {
+  font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px;
+}
+
+.monthly-area-row {
+  background: var(--bg-card); border-radius: var(--radius-sm);
+  padding: 16px; margin-bottom: 10px; border: 1.5px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+}
+.monthly-area-icon { font-size: 1.4rem; flex-shrink: 0; }
+.monthly-area-info { flex: 1; min-width: 0; }
+.monthly-area-name {
+  font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; margin-bottom: 6px;
+}
+.monthly-area-bar { height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.monthly-area-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+.monthly-area-pct {
+  font-family: var(--font-display); font-size: 0.85rem; font-weight: 700;
+  flex-shrink: 0; min-width: 36px; text-align: right;
+}
+
+.monthly-radar-container {
+  background: var(--bg-card); border-radius: var(--radius);
+  padding: 24px 16px; margin-bottom: 20px; border: 1.5px solid var(--border);
+}
+
+/* ===== TASK CARD ===== */
+.task-card {
+  background: var(--bg-card); border-radius: var(--radius-sm);
+  padding: 14px 16px; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 14px;
+  border: 1.5px solid var(--border); cursor: pointer;
+  transition: transform 0.15s, background 0.2s;
+  position: relative; overflow: hidden;
+  user-select: none; -webkit-user-select: none;
+}
+.task-card:active { transform: scale(0.98); }
+.task-card.completed { background: #F0FDF4; border-color: #BBF7D0; }
+.task-card.completed .task-title { color: var(--text-muted); text-decoration: line-through; text-decoration-color: #BBF7D0; }
+
+.task-checkbox {
+  width: 26px; height: 26px; border-radius: 8px;
+  border: 2.5px solid var(--border); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: var(--bg);
+}
+.task-card.completed .task-checkbox {
+  background: var(--success); border-color: var(--success);
+  animation: checkBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.task-checkbox svg {
+  width: 14px; height: 14px; stroke: white; stroke-width: 3; fill: none;
+  opacity: 0; transform: scale(0);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.task-card.completed .task-checkbox svg { opacity: 1; transform: scale(1); }
+
+.task-info { flex: 1; min-width: 0; }
+.task-title { font-size: 0.88rem; font-weight: 500; line-height: 1.3; }
+.task-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.task-freq {
+  font-size: 0.68rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.04em; padding: 2px 7px; border-radius: 4px;
+  background: var(--bg); color: var(--text-muted);
+}
+.task-streak { font-size: 0.72rem; font-weight: 700; color: var(--streak-fire); display: flex; align-items: center; gap: 3px; }
+.task-xp { font-size: 0.72rem; font-weight: 700; color: var(--xp-gold); margin-left: auto; flex-shrink: 0; }
+
+/* ===== BOSS CARD ===== */
+.boss-card {
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  border-radius: var(--radius); padding: 18px; margin-bottom: 12px;
+  border: 2px solid var(--xp-gold); position: relative; overflow: hidden; cursor: pointer;
+}
+.boss-label {
+  font-family: var(--font-display); font-size: 0.65rem; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--xp-gold); font-weight: 700; margin-bottom: 6px;
+}
+.boss-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+.boss-power-bar { height: 8px; background: rgba(212,160,23,0.2); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+.boss-power-fill { height: 100%; background: var(--xp-gold); border-radius: 4px; transition: width 0.6s ease; }
+.boss-power-label { font-size: 0.7rem; color: var(--text-secondary); font-weight: 500; }
+
+/* ===== XP FLOAT ===== */
+.xp-float {
+  position: fixed; font-family: var(--font-display); font-weight: 700;
+  font-size: 1.2rem; color: var(--xp-gold); pointer-events: none; z-index: 1000;
+  animation: floatUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-80px) scale(1.3); }
+}
+@keyframes checkBounce { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+/* ===== LEVEL UP OVERLAY ===== */
+.level-up-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(245, 240, 232, 0.95); backdrop-filter: blur(10px);
+  animation: overlayIn 0.5s ease; cursor: pointer;
+}
+@keyframes overlayIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+.level-up-badge {
+  width: 120px; height: 120px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; margin-bottom: 24px;
+  animation: badgePop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  box-shadow: 0 8px 40px rgba(212, 160, 23, 0.3);
+}
+@keyframes badgePop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+
+.level-up-text {
+  font-family: var(--font-display); font-size: 0.85rem; text-transform: uppercase;
+  letter-spacing: 0.15em; color: var(--xp-gold); font-weight: 700; margin-bottom: 8px;
+  animation: textIn 0.4s 0.4s ease both;
+}
+.level-up-level { font-family: var(--font-display); font-size: 3rem; font-weight: 700; animation: textIn 0.4s 0.5s ease both; }
+.level-up-area { font-size: 1rem; color: var(--text-secondary); margin-top: 4px; animation: textIn 0.4s 0.6s ease both; }
+.level-up-dismiss { font-size: 0.75rem; color: var(--text-muted); margin-top: 32px; animation: textIn 0.4s 0.8s ease both; }
+@keyframes textIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+  background: var(--bg-card); border: 2px solid var(--streak-fire); border-radius: var(--radius);
+  padding: 12px 20px; font-family: var(--font-display); font-weight: 700; font-size: 0.85rem;
+  z-index: 1500; box-shadow: 0 8px 30px rgba(0,0,0,0.12); white-space: nowrap;
+  animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, toastOut 0.3s 2.5s ease forwards;
+}
+@keyframes toastIn { 0% { transform: translateX(-50%) translateY(-100px); } 100% { transform: translateX(-50%) translateY(0); } }
+@keyframes toastOut { 0% { transform: translateX(-50%) translateY(0); opacity: 1; } 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; } }
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--bg-card); border-top: 1.5px solid var(--border);
+  display: flex; justify-content: center; padding: 8px 0;
+  padding-bottom: max(8px, env(safe-area-inset-bottom)); z-index: 100;
+}
+.nav-item {
+  flex: 1; max-width: 120px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 0; cursor: pointer; color: var(--text-muted);
+  transition: color 0.2s; background: none; border: none; font-family: var(--font-body);
+}
+.nav-item.active { color: var(--text); }
+.nav-item svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; }
+.nav-item.active svg { stroke-width: 2.5; }
+.nav-label { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* ===== STATS ===== */
+.stat-row {
+  display: flex; justify-content: space-between;
+  background: var(--bg-card); border-radius: var(--radius-sm);
+  padding: 16px; margin-bottom: 8px; border: 1.5px solid var(--border);
+}
+.stat-label { font-size: 0.8rem; color: var(--text-secondary); }
+.stat-value { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+
+.heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 12px; }
+.heatmap-cell { aspect-ratio: 1; border-radius: 3px; background: var(--border); }
+.heatmap-cell.l1 { background: #D1FAE5; } .heatmap-cell.l2 { background: #6EE7B7; }
+.heatmap-cell.l3 { background: #34D399; } .heatmap-cell.l4 { background: #059669; }
+
+.streak-card {
+  background: var(--bg-card); border-radius: var(--radius-sm);
+  padding: 14px 16px; margin-bottom: 8px; border: 1.5px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.streak-fire-icon { font-size: 1.4rem; animation: firePulse 1.5s ease-in-out infinite; }
+@keyframes firePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+.streak-info { flex: 1; }
+.streak-task-name { font-size: 0.82rem; font-weight: 500; }
+.streak-count { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--streak-fire); }
+.streak-mult {
+  font-size: 0.7rem; font-weight: 700;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  color: var(--xp-gold); padding: 3px 8px; border-radius: 6px;
+}
+
+.pattern-dots {
+  background-image: radial-gradient(circle, var(--text-muted) 0.5px, transparent 0.5px);
+  background-size: 8px 8px; opacity: 0.06; position: absolute; inset: 0; pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-title">Harada Quest</div>
+    <div class="header-level" id="globalLevel">LV 1</div>
+  </div>
+  <div class="xp-bar-container"><div class="xp-bar-fill" id="globalXpBar" style="width:0%"></div></div>
+  <div class="xp-label"><span id="xpCurrent">0 XP</span><span id="xpNext">100 XP to Lv 2</span></div>
+
+  <!-- DASHBOARD -->
+  <div class="view active" id="view-dashboard">
+    <div class="section-title">Your Areas</div>
+    <div class="carousel-wrapper">
+      <div class="carousel" id="areaCarousel"></div>
+      <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+
+    <button class="monthly-btn" onclick="showMonthly()">
+      <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Monthly Progress
+    </button>
+
+    <div class="section-title">Boss Battles</div>
+    <div id="bossList"></div>
+  </div>
+
+  <!-- AREA DETAIL -->
+  <div class="view" id="view-area-detail"></div>
+
+  <!-- MONTHLY OVERVIEW -->
+  <div class="view" id="view-monthly"></div>
+
+  <!-- CHECK-IN -->
+  <div class="view" id="view-checkin">
+    <h2 style="font-size:1.4rem; margin-bottom:4px;">Today's Quests</h2>
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;" id="checkinDate"></p>
+    <div id="questList"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="view" id="view-stats">
+    <h2 style="font-size:1.4rem; margin-bottom:20px;">Stats</h2>
+    <div id="statsContent"></div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item active" data-view="dashboard">
+    <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1m-2 0h2"/></svg>
+    <span class="nav-label">Home</span>
+  </button>
+  <button class="nav-item" data-view="checkin">
+    <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <span class="nav-label">Check-in</span>
+  </button>
+  <button class="nav-item" data-view="stats">
+    <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+    <span class="nav-label">Stats</span>
+  </button>
+</nav>
+
+<script>
+// ===== DATA =====
+const AREAS = [
+  { id: 'leadership', name: 'Leadership', icon: '🎬', color: '#2563EB' },
+  { id: 'creative',   name: 'Creative Voice', icon: '🎭', color: '#9333EA' },
+  { id: 'craft',      name: 'Craft', icon: '🎥', color: '#E07B2E' },
+  { id: 'finance',    name: 'Finance', icon: '💰', color: '#16A34A' },
+  { id: 'network',    name: 'Network', icon: '🤝', color: '#DC2626' },
+  { id: 'family',     name: 'Family & Friends', icon: '❤️', color: '#EC4899' },
+  { id: 'body',       name: 'Body', icon: '💪', color: '#0D9488' },
+  { id: 'mind',       name: 'Mind', icon: '🧠', color: '#7C3AED' },
+];
+
+const TASKS = [
+  { id:'lead-01', areaId:'leadership', title:'Practice giving better feedback & direction', frequency:'weekly', baseXP:15 },
+  { id:'lead-02', areaId:'leadership', title:'Have a 1:1 meeting with a new person', frequency:'monthly', baseXP:50, isBoss:true },
+  { id:'lead-03', areaId:'leadership', title:'2hr pause before responding to bad behavior', frequency:'daily', baseXP:5 },
+  { id:'lead-04', areaId:'leadership', title:"Deep dive on a director/leader's methods", frequency:'monthly', baseXP:50, isBoss:true },
+  { id:'lead-05', areaId:'leadership', title:"Delegate a task I'd normally do myself", frequency:'monthly', baseXP:50 },
+  { id:'lead-06', areaId:'leadership', title:'Read one leadership article', frequency:'monthly', baseXP:50 },
+  { id:'lead-07', areaId:'leadership', title:'Document my leadership style & process', frequency:'monthly', baseXP:50 },
+  { id:'lead-08', areaId:'leadership', title:'Maintain creative process playbook', frequency:'weekly', baseXP:15 },
+
+  { id:'crv-01', areaId:'creative', title:'Maintain visual moodboard with inspiration', frequency:'weekly', baseXP:15 },
+  { id:'crv-02', areaId:'creative', title:'Write a self-reflective free form essay', frequency:'monthly', baseXP:50, isBoss:true },
+  { id:'crv-03', areaId:'creative', title:'Learn/create on a non-film creative tech', frequency:'monthly', baseXP:50 },
+  { id:'crv-04', areaId:'creative', title:'Read article about new creative technology', frequency:'weekly', baseXP:15 },
+  { id:'crv-05', areaId:'creative', title:'Consume a new artist of any medium', frequency:'weekly', baseXP:15 },
+  { id:'crv-06', areaId:'creative', title:'Study one stand out film', frequency:'weekly', baseXP:15 },
+  { id:'crv-07', areaId:'creative', title:'Develop an original film/series concept', frequency:'weekly', baseXP:15 },
+  { id:'crv-08', areaId:'creative', title:'Storyboard one feature film', frequency:'monthly', baseXP:50, isBoss:true },
+
+  { id:'crf-01', areaId:'craft', title:'Shoot one video as DP', frequency:'monthly', baseXP:50, isBoss:true },
+  { id:'crf-02', areaId:'craft', title:'Edit one remote video', frequency:'quarterly', baseXP:150, isBoss:true },
+  { id:'crf-03', areaId:'craft', title:'Write one short film', frequency:'weekly', baseXP:15 },
+  { id:'crf-04', areaId:'craft', title:'Read one feature film script', frequency:'monthly', baseXP:50 },
+  { id:'crf-05', areaId:'craft', title:'Produce 1 short film', frequency:'monthly', baseXP:50, isBoss:true },
+  { id:'crf-06', areaId:'craft', title:'Study music and sound for 1 hour', frequency:'monthly', baseXP:50 },
+  { id:'crf-07', areaId:'craft', title:'Practice pitch one film concept', frequency:'monthly', baseXP:50 },
+  { id:'crf-08', areaId:'craft', title:"Write essay about a film's creative approach", frequency:'monthly', baseXP:50 },
+
+  { id:'fin-01', areaId:'finance', title:'Check capital / daily spend', frequency:'daily', baseXP:5 },
+  { id:'fin-02', areaId:'finance', title:'Save 30% of discretionary budget', frequency:'monthly', baseXP:50, isBoss:true },
+  { id:'fin-03', areaId:'finance', title:'Read about financial health', frequency:'monthly', baseXP:50 },
+  { id:'fin-04', areaId:'finance', title:'Audit subscriptions', frequency:'weekly', baseXP:15 },
+  { id:'fin-05', areaId:'finance', title:'Build film production fund', frequency:'monthly', baseXP:50, isBoss:true },
+  { id:'fin-06', areaId:'finance', title:'4hr wait rule before non-essential buys', frequency:'daily', baseXP:5 },
+  { id:'fin-07', areaId:'finance', title:'1hr checking finances', frequency:'monthly', baseXP:50 },
+  { id:'fin-08', areaId:'finance', title:'Be good at my job', frequency:'daily', baseXP:5 },
+
+  { id:'net-01', areaId:'network', title:'Reach out to one film world friend', frequency:'monthly', baseXP:50 },
+  { id:'net-02', areaId:'network', title:"Say yes to a networking event I'd skip", frequency:'quarterly', baseXP:150, isBoss:true },
+  { id:'net-03', areaId:'network', title:'Attend a creative tech conference', frequency:'quarterly', baseXP:150, isBoss:true },
+  { id:'net-04', areaId:'network', title:'Connect with a film person online', frequency:'monthly', baseXP:50 },
+  { id:'net-05', areaId:'network', title:'Attend one writing retreat', frequency:'quarterly', baseXP:150, isBoss:true },
+  { id:'net-06', areaId:'network', title:'Submit work once', frequency:'quarterly', baseXP:150, isBoss:true },
+  { id:'net-07', areaId:'network', title:'1 filmmaking event', frequency:'quarterly', baseXP:150, isBoss:true },
+  { id:'net-08', areaId:'network', title:'Add to online presence', frequency:'weekly', baseXP:15 },
+
+  { id:'fam-01', areaId:'family', title:'Send messages to family & friends', frequency:'weekly', baseXP:15 },
+  { id:'fam-02', areaId:'family', title:'10 min quality time with dogs', frequency:'daily', baseXP:5 },
+  { id:'fam-03', areaId:'family', title:'Consume Brazilian culture/food', frequency:'weekly', baseXP:15 },
+  { id:'fam-04', areaId:'family', title:'Clean bathrooms', frequency:'weekly', baseXP:15 },
+  { id:'fam-05', areaId:'family', title:'Board game with Meg', frequency:'weekly', baseXP:15 },
+  { id:'fam-06', areaId:'family', title:'In person social time with friends', frequency:'monthly', baseXP:50 },
+  { id:'fam-07', areaId:'family', title:'Visit Brazil', frequency:'quarterly', baseXP:150, isBoss:true },
+  { id:'fam-08', areaId:'family', title:'Create and check birthday calendar', frequency:'monthly', baseXP:50 },
+
+  { id:'bod-01', areaId:'body', title:'Daily skin routine', frequency:'daily', baseXP:5 },
+  { id:'bod-02', areaId:'body', title:'Strengthen exercise 2x', frequency:'weekly', baseXP:15 },
+  { id:'bod-03', areaId:'body', title:'Cook 3 meals', frequency:'weekly', baseXP:15 },
+  { id:'bod-04', areaId:'body', title:'Sheets weekly in zones 1-3', frequency:'weekly', baseXP:15 },
+  { id:'bod-05', areaId:'body', title:'Drink 2L of water', frequency:'daily', baseXP:5 },
+  { id:'bod-06', areaId:'body', title:'Stand up and stretch every 2hrs', frequency:'daily', baseXP:5 },
+  { id:'bod-07', areaId:'body', title:'Massage chair session', frequency:'weekly', baseXP:15 },
+
+  { id:'mnd-01', areaId:'mind', title:'10 min breath work', frequency:'daily', baseXP:5 },
+  { id:'mnd-02', areaId:'mind', title:'20 min leisure reading', frequency:'daily', baseXP:5 },
+  { id:'mnd-03', areaId:'mind', title:'No phone first hour of the day', frequency:'daily', baseXP:5 },
+  { id:'mnd-04', areaId:'mind', title:'30 min weekly yoga', frequency:'weekly', baseXP:15 },
+  { id:'mnd-05', areaId:'mind', title:'30 min weekly reflection', frequency:'weekly', baseXP:15 },
+  { id:'mnd-06', areaId:'mind', title:'Clean office', frequency:'weekly', baseXP:15 },
+  { id:'mnd-07', areaId:'mind', title:'Get out of the house', frequency:'weekly', baseXP:15 },
+  { id:'mnd-08', areaId:'mind', title:'Take one class', frequency:'weekly', baseXP:15 },
+  { id:'mnd-09', areaId:'mind', title:'5hr phone free block', frequency:'weekly', baseXP:15 },
+];
+
+// ===== STATE =====
+const STATE_KEY = 'harada-quest-state';
+function getDefaultState() {
+  return { totalXP: 0, areaXP: Object.fromEntries(AREAS.map(a=>[a.id,0])), completions: {}, streaks: {}, bossesDefeated: [] };
+}
+let state = loadState();
+function loadState() { try { const s = localStorage.getItem(STATE_KEY); if(s) return {...getDefaultState(), ...JSON.parse(s)}; } catch(e){} return getDefaultState(); }
+function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+
+// ===== DATE UTILS =====
+function getPeriodKey(freq, d=new Date()) {
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  if(freq==='daily') return `${y}-${m}-${day}`;
+  if(freq==='weekly') { const j=new Date(y,0,1); const days=Math.floor((d-j)/864e5); return `${y}-W${String(Math.ceil((days+j.getDay()+1)/7)).padStart(2,'0')}`; }
+  if(freq==='monthly') return `${y}-${m}`;
+  if(freq==='quarterly') return `${y}-Q${Math.ceil((d.getMonth()+1)/3)}`;
+  return `${y}-${m}-${day}`;
+}
+function getPrevPeriod(freq, key) {
+  if(freq==='daily') { const d=new Date(key); d.setDate(d.getDate()-1); return getPeriodKey('daily',d); }
+  if(freq==='weekly') { const [y,w]=key.split('-W').map(Number); return w<=1?`${y-1}-W52`:`${y}-W${String(w-1).padStart(2,'0')}`; }
+  if(freq==='monthly') { const [y,m]=key.split('-').map(Number); return m<=1?`${y-1}-12`:`${y}-${String(m-1).padStart(2,'0')}`; }
+  if(freq==='quarterly') { const [y,q]=key.replace('Q','').split('-').map(Number); return q<=1?`${y-1}-Q4`:`${y}-Q${q-1}`; }
+}
+function isCompleted(taskId, freq) { return !!state.completions[`${taskId}:${getPeriodKey(freq)}`]; }
+
+// ===== XP =====
+function xpForLevel(l) { return l<=1?0:Math.floor(50*Math.pow(l,1.5)); }
+function getLevel(xp) { let l=1; while(xpForLevel(l+1)<=xp) l++; return l; }
+function getLevelProgress(xp) { const l=getLevel(xp); return (xp-xpForLevel(l))/(xpForLevel(l+1)-xpForLevel(l)); }
+function getOverallLevel() { return Math.floor(AREAS.map(a=>getLevel(state.areaXP[a.id]||0)).reduce((s,l)=>s+l,0)/AREAS.length); }
+function getMultiplier(s) { return s>=30?2:s>=14?1.75:s>=7?1.5:s>=3?1.25:1; }
+
+// ===== COMPLETE TASK =====
+function completeTask(taskId, cardEl) {
+  const task = TASKS.find(t=>t.id===taskId); if(!task) return;
+  const period = getPeriodKey(task.frequency);
+  const ck = `${taskId}:${period}`;
+
+  if(state.completions[ck]) {
+    delete state.completions[ck];
+    const sk = state.streaks[taskId]||{current:0}; const m=getMultiplier(sk.current); const xp=Math.round(task.baseXP*m);
+    state.totalXP=Math.max(0,state.totalXP-xp); state.areaXP[task.areaId]=Math.max(0,(state.areaXP[task.areaId]||0)-xp);
+    saveState(); updateUI(); return;
+  }
+
+  if(!state.streaks[taskId]) state.streaks[taskId]={current:0,longest:0,lastPeriod:null};
+  const sk=state.streaks[taskId]; const prev=getPrevPeriod(task.frequency,period);
+  if(sk.lastPeriod===prev) sk.current++; else if(sk.lastPeriod!==period) sk.current=1;
+  sk.lastPeriod=period; sk.longest=Math.max(sk.longest,sk.current);
+
+  const mult=getMultiplier(sk.current); const earned=Math.round(task.baseXP*mult);
+  const oldLevel=getLevel(state.areaXP[task.areaId]||0);
+  state.completions[ck]=Date.now(); state.totalXP+=earned; state.areaXP[task.areaId]=(state.areaXP[task.areaId]||0)+earned;
+  saveState();
+
+  showXPFloat(cardEl, earned, mult);
+  if([3,7,14,30].includes(sk.current)) showToast(`🔥 ${sk.current}-streak! ${mult}x multiplier`);
+  const newLevel=getLevel(state.areaXP[task.areaId]);
+  if(newLevel>oldLevel) { const area=AREAS.find(a=>a.id===task.areaId); setTimeout(()=>showLevelUp(area,newLevel),600); }
+  if(navigator.vibrate) navigator.vibrate(30);
+  updateUI();
+}
+
+// ===== ANIMATIONS =====
+function showXPFloat(el,xp,mult) {
+  const r=el.getBoundingClientRect(); const f=document.createElement('div');
+  f.className='xp-float'; f.textContent=mult>1?`+${xp} XP (${mult}x)`:`+${xp} XP`;
+  f.style.left=`${r.right-60}px`; f.style.top=`${r.top}px`;
+  document.body.appendChild(f); setTimeout(()=>f.remove(),1300);
+}
+function showToast(msg) {
+  const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),3000);
+}
+function showLevelUp(area,level) {
+  const o=document.createElement('div'); o.className='level-up-overlay';
+  o.innerHTML=`<div class="level-up-badge" style="background:linear-gradient(135deg,${area.color}22,${area.color}44);border:3px solid ${area.color}">${area.icon}</div>
+    <div class="level-up-text">Level Up!</div><div class="level-up-level">Level ${level}</div>
+    <div class="level-up-area">${area.name}</div><div class="level-up-dismiss">tap to continue</div>`;
+  o.addEventListener('click',()=>o.remove()); document.body.appendChild(o);
+  if(navigator.vibrate) navigator.vibrate([50,30,100]);
+}
+
+// ===== HELPERS =====
+function getAreaCompletion(areaId) {
+  const tasks = TASKS.filter(t=>t.areaId===areaId);
+  const done = tasks.filter(t=>isCompleted(t.id,t.frequency)).length;
+  return { done, total: tasks.length, pct: tasks.length?Math.round(done/tasks.length*100):0 };
+}
+
+// ===== RENDER =====
+function updateUI() {
+  updateGlobalBar();
+  const active = document.querySelector('.view.active');
+  if(active) {
+    if(active.id==='view-dashboard') renderDashboard();
+    else if(active.id==='view-checkin') renderCheckin();
+    else if(active.id==='view-stats') renderStats();
+    else if(active.id==='view-area-detail') renderAreaDetail(active.dataset.areaId);
+    else if(active.id==='view-monthly') renderMonthly();
+  }
+}
+
+function updateGlobalBar() {
+  const l=getOverallLevel(); const p=getLevelProgress(state.totalXP);
+  document.getElementById('globalLevel').textContent=`LV ${l}`;
+  document.getElementById('globalXpBar').style.width=`${Math.min(100,p*100)}%`;
+  document.getElementById('xpCurrent').textContent=`${state.totalXP} XP`;
+  document.getElementById('xpNext').textContent=`${xpForLevel(l+1)-state.totalXP} XP to Lv ${l+1}`;
+}
+
+// ----- Dashboard -----
+let currentCarouselIndex = 0;
+function renderDashboard() {
+  const carousel = document.getElementById('areaCarousel');
+  const dots = document.getElementById('carouselDots');
+
+  carousel.innerHTML = AREAS.map((area,i) => {
+    const xp = state.areaXP[area.id]||0;
+    const level = getLevel(xp);
+    const progress = getLevelProgress(xp);
+    const comp = getAreaCompletion(area.id);
+    return `
+      <div class="area-card" style="--area-color:${area.color}" onclick="showAreaDetail('${area.id}')" data-index="${i}">
+        <div class="pattern-dots"></div>
+        <div>
+          <div class="area-card-top">
+            <div class="area-card-icon">${area.icon}</div>
+            <div class="area-card-level-badge" style="background:${area.color}">LV ${level}</div>
+          </div>
+          <div class="area-card-name">${area.name}</div>
+          <div class="area-card-progress-text">${xp} XP · ${xpForLevel(level+1)-xp} to next level</div>
+        </div>
+        <div>
+          <div class="area-card-bar"><div class="area-card-bar-fill" style="width:${progress*100}%;background:${area.color}"></div></div>
+          <div class="area-card-tasks-done">
+            <span style="color:${area.color};font-weight:700;">${comp.done}/${comp.total}</span> tasks this period
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  dots.innerHTML = AREAS.map((_,i) => `<div class="carousel-dot ${i===currentCarouselIndex?'active':''}" data-i="${i}"></div>`).join('');
+
+  // Sync dot on scroll
+  carousel.onscroll = () => {
+    const cardW = carousel.firstElementChild?.offsetWidth || 1;
+    const idx = Math.round(carousel.scrollLeft / (cardW + 14));
+    if(idx !== currentCarouselIndex) {
+      currentCarouselIndex = idx;
+      dots.querySelectorAll('.carousel-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
+    }
+  };
+
+  // Boss list
+  const bossList = document.getElementById('bossList');
+  const bossTasks = TASKS.filter(t=>t.isBoss && !isCompleted(t.id,t.frequency)).slice(0,3);
+  if(!bossTasks.length) { bossList.innerHTML='<p style="color:var(--text-muted);font-size:0.85rem;">All bosses defeated! 🏆</p>'; }
+  else {
+    bossList.innerHTML = bossTasks.map(boss => {
+      const area=AREAS.find(a=>a.id===boss.areaId);
+      const nonBoss=TASKS.filter(t=>t.areaId===boss.areaId&&!t.isBoss);
+      const done=nonBoss.filter(t=>isCompleted(t.id,t.frequency)).length;
+      const req=Math.ceil(nonBoss.length*0.75);
+      const powered=done>=req;
+      return `<div class="boss-card" onclick="${powered?`completeTask('${boss.id}',this)`:''}">
+        <div class="boss-label">⚔️ Boss — ${area.name}</div>
+        <div class="boss-title">${boss.title}</div>
+        <div class="boss-power-bar"><div class="boss-power-fill" style="width:${Math.min(100,done/req*100)}%"></div></div>
+        <div class="boss-power-label">${powered?'⚡ Powered up! Tap to fight!':`Power up: ${done}/${req} tasks`}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ----- Area Detail -----
+function showAreaDetail(areaId) {
+  hideAllViews();
+  const v = document.getElementById('view-area-detail');
+  v.dataset.areaId = areaId;
+  v.classList.add('active');
+  renderAreaDetail(areaId);
+}
+
+function renderAreaDetail(areaId) {
+  const area = AREAS.find(a=>a.id===areaId); if(!area) return;
+  const v = document.getElementById('view-area-detail');
+  const xp = state.areaXP[areaId]||0;
+  const level = getLevel(xp);
+  const progress = getLevelProgress(xp);
+  const tasks = TASKS.filter(t=>t.areaId===areaId);
+
+  v.innerHTML = `
+    <div class="area-detail-header">
+      <div class="back-btn" onclick="switchView('dashboard')">
+        <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+      </div>
+      <div>
+        <div class="area-detail-title">${area.icon} ${area.name}</div>
+        <div class="area-detail-level">Level ${level} · ${xp} XP</div>
+      </div>
+    </div>
+    <div class="area-detail-xp-bar"><div class="area-detail-xp-bar-fill" style="width:${progress*100}%;background:${area.color}"></div></div>
+    <div class="area-detail-xp-label">${xpForLevel(level+1)-xp} XP to Level ${level+1}</div>
+    ${tasks.map(task => {
+      const completed = isCompleted(task.id,task.frequency);
+      const sk = state.streaks[task.id]; const streakCount = sk?sk.current:0;
+      const mult = getMultiplier(streakCount); const xpVal = Math.round(task.baseXP*mult);
+      return `<div class="task-card ${completed?'completed':''}" onclick="completeTask('${task.id}',this)"
+        ${task.isBoss?`style="border-left:3px solid ${area.color}"`:''}>
+        <div class="task-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="task-info">
+          <div class="task-title">${task.isBoss?'⚔️ ':''}${task.title}</div>
+          <div class="task-meta">
+            <span class="task-freq">${task.frequency}</span>
+            ${streakCount>1?`<span class="task-streak">🔥 ${streakCount}</span>`:''}
+          </div>
+        </div>
+        <div class="task-xp">${completed?'✓':`+${xpVal}`}</div>
+      </div>`;
+    }).join('')}`;
+}
+
+// ----- Monthly Overview -----
+function showMonthly() {
+  hideAllViews();
+  document.getElementById('view-monthly').classList.add('active');
+  renderMonthly();
+}
+
+let monthlyChart = null;
+function renderMonthly() {
+  const v = document.getElementById('view-monthly');
+  const now = new Date();
+  const monthName = now.toLocaleDateString('en-US', {month:'long', year:'numeric'});
+
+  v.innerHTML = `
+    <div class="monthly-header">
+      <div class="back-btn" onclick="switchView('dashboard')">
+        <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+      </div>
+      <div><h2 style="font-size:1.3rem;">Monthly Progress</h2></div>
+    </div>
+    <div class="monthly-subtitle">${monthName}</div>
+    <div class="monthly-radar-container">
+      <canvas id="monthlyRadar" height="280"></canvas>
+    </div>
+    ${AREAS.map(area => {
+      const comp = getAreaCompletion(area.id);
+      return `<div class="monthly-area-row">
+        <div class="monthly-area-icon">${area.icon}</div>
+        <div class="monthly-area-info">
+          <div class="monthly-area-name">${area.name}</div>
+          <div class="monthly-area-bar"><div class="monthly-area-bar-fill" style="width:${comp.pct}%;background:${area.color}"></div></div>
+        </div>
+        <div class="monthly-area-pct" style="color:${area.color}">${comp.pct}%</div>
+      </div>`;
+    }).join('')}`;
+
+  // Render radar
+  setTimeout(() => {
+    const ctx = document.getElementById('monthlyRadar');
+    if(!ctx) return;
+    const data = AREAS.map(a => getLevel(state.areaXP[a.id]||0));
+    const maxL = Math.max(5, ...data);
+
+    if(monthlyChart) { monthlyChart.destroy(); monthlyChart=null; }
+    monthlyChart = new Chart(ctx.getContext('2d'), {
+      type: 'radar',
+      data: {
+        labels: AREAS.map(a=>`${a.icon} ${a.name}`),
+        datasets: [{
+          data, backgroundColor:'rgba(37,99,235,0.08)', borderColor:'#D4A017', borderWidth:2.5,
+          pointBackgroundColor: AREAS.map(a=>a.color), pointBorderColor:'#fff', pointBorderWidth:2,
+          pointRadius:5,
+        }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:true,
+        plugins:{legend:{display:false}},
+        scales:{ r:{ min:0, max:maxL, ticks:{display:false,stepSize:1}, grid:{color:'rgba(0,0,0,0.06)'}, angleLines:{color:'rgba(0,0,0,0.06)'}, pointLabels:{font:{family:'Space Grotesk',size:11,weight:600},color:'#6B6560'} } },
+        animation:{duration:600,easing:'easeOutQuart'}
+      }
+    });
+  }, 50);
+}
+
+// ----- Check-in -----
+function renderCheckin() {
+  const now=new Date();
+  document.getElementById('checkinDate').textContent=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const ql=document.getElementById('questList');
+
+  ql.innerHTML = AREAS.map(area => {
+    const tasks=TASKS.filter(t=>t.areaId===area.id).filter(t=>{
+      if(t.frequency==='daily'||t.frequency==='weekly') return true;
+      return !isCompleted(t.id,t.frequency);
+    });
+    if(!tasks.length) return '';
+    const done=tasks.filter(t=>isCompleted(t.id,t.frequency)).length;
+    return `<div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${area.color}"></div>
+        <div style="font-family:var(--font-display);font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-secondary)">${area.name}</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-left:auto">${done}/${tasks.length}</div>
+      </div>
+      ${tasks.map(task => {
+        const completed=isCompleted(task.id,task.frequency);
+        const sk=state.streaks[task.id]; const sc=sk?sk.current:0; const m=getMultiplier(sc); const xp=Math.round(task.baseXP*m);
+        return `<div class="task-card ${completed?'completed':''}" onclick="completeTask('${task.id}',this)"
+          ${task.isBoss?`style="border-left:3px solid ${area.color}"`:''}>
+          <div class="task-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="task-info">
+            <div class="task-title">${task.isBoss?'⚔️ ':''}${task.title}</div>
+            <div class="task-meta"><span class="task-freq">${task.frequency}</span>${sc>1?`<span class="task-streak">🔥 ${sc}</span>`:''}</div>
+          </div>
+          <div class="task-xp">${completed?'✓':`+${xp}`}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+// ----- Stats -----
+function renderStats() {
+  const c=document.getElementById('statsContent');
+  const total=Object.keys(state.completions).length;
+  const todayKey=getPeriodKey('daily');
+  const today=Object.keys(state.completions).filter(k=>k.endsWith(`:${todayKey}`)).length;
+  const topStreaks=Object.entries(state.streaks).filter(([_,s])=>s.current>0).sort((a,b)=>b[1].current-a[1].current).slice(0,5);
+
+  const cells=[]; for(let i=27;i>=0;i--) { const d=new Date();d.setDate(d.getDate()-i); const k=getPeriodKey('daily',d);
+    const cnt=Object.keys(state.completions).filter(c=>c.endsWith(`:${k}`)).length;
+    let l=''; if(cnt>=8)l='l4';else if(cnt>=5)l='l3';else if(cnt>=2)l='l2';else if(cnt>=1)l='l1';
+    cells.push(`<div class="heatmap-cell ${l}"></div>`);
+  }
+
+  c.innerHTML = `
+    <div class="stat-row"><span class="stat-label">Total XP</span><span class="stat-value" style="color:var(--xp-gold)">${state.totalXP}</span></div>
+    <div class="stat-row"><span class="stat-label">Overall Level</span><span class="stat-value">${getOverallLevel()}</span></div>
+    <div class="stat-row"><span class="stat-label">Tasks Completed</span><span class="stat-value">${total}</span></div>
+    <div class="stat-row"><span class="stat-label">Today</span><span class="stat-value">${today}</span></div>
+    <div class="section-title" style="margin-top:24px">Last 28 Days</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius-sm);padding:16px;border:1.5px solid var(--border)">
+      <div class="heatmap">${cells.join('')}</div>
+    </div>
+    ${topStreaks.length?`<div class="section-title" style="margin-top:24px">Active Streaks</div>
+      ${topStreaks.map(([id,s])=>{const t=TASKS.find(x=>x.id===id);const m=getMultiplier(s.current);
+        return `<div class="streak-card"><div class="streak-fire-icon">🔥</div><div class="streak-info"><div class="streak-task-name">${t?t.title:id}</div></div>
+        <div class="streak-count">${s.current}</div>${m>1?`<div class="streak-mult">${m}x</div>`:''}</div>`;}).join('')}`:''}`;
+}
+
+// ===== NAVIGATION =====
+function hideAllViews() { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); }
+function switchView(viewId) {
+  hideAllViews();
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`view-${viewId}`).classList.add('active');
+  const navBtn = document.querySelector(`[data-view="${viewId}"]`);
+  if(navBtn) navBtn.classList.add('active');
+  updateUI();
+}
+document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', ()=>switchView(btn.dataset.view)));
+
+// ===== INIT =====
+updateUI(); renderDashboard();
+</script>
+</body>
+</html>
