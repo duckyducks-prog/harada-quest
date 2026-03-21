@@ -731,7 +731,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
 </nav>
 
 <!-- Coach FAB -->
-<button class="coach-fab" onclick="openCoachPanel()" aria-label="Open Coach">
+<button class="coach-fab" onclick="openCoachPanel()" aria-label="Open Sensei">
   <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg>
 </button>
 
@@ -739,7 +739,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
 <div class="coach-panel-backdrop" id="coachBackdrop" onclick="closeCoachPanel()"></div>
 <div class="coach-panel" id="coachPanel">
   <div class="coach-panel-header">
-    <div class="coach-panel-title">Your Coach</div>
+    <div class="coach-panel-title">Your Sensei</div>
     <div style="display:flex;align-items:center;gap:6px;">
       <button class="coach-new-btn" onclick="startNewCoachSession()">New chat</button>
       <div class="coach-panel-close" onclick="closeCoachPanel()">
@@ -749,7 +749,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
   </div>
   <div class="coach-panel-body" id="coachPanelBody"></div>
   <div class="coach-panel-input" id="coachInputBar">
-    <input placeholder="Ask your coach..." onkeydown="handleCoachInput(event)" id="coachInput" />
+    <input placeholder="Ask your sensei..." onkeydown="handleCoachInput(event)" id="coachInput" />
     <button class="coach-send-btn" onclick="sendFromInput()">
       <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
     </button>
@@ -1275,31 +1275,65 @@ function gatherCoachingData() {
     last14.push({ date: k, count: cnt });
   }
 
+  // Calculate urgency: uncompleted tasks running out of time
+  const daysLeftInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
+  const dayOfWeek = now.getDay(); // 0=Sun
+  const daysLeftInWeek = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+  const currentQuarter = Math.ceil((now.getMonth() + 1) / 3);
+  const quarterEndMonth = currentQuarter * 3;
+  const quarterEnd = new Date(now.getFullYear(), quarterEndMonth, 0);
+  const daysLeftInQuarter = Math.ceil((quarterEnd - now) / 864e5);
+
+  const urgentTasks = TASKS.filter(t => !isCompleted(t.id, t.frequency)).map(t => {
+    const area = AREAS.find(a => a.id === t.areaId);
+    let daysLeft, period;
+    if (t.frequency === 'weekly') { daysLeft = daysLeftInWeek; period = 'this week'; }
+    else if (t.frequency === 'monthly') { daysLeft = daysLeftInMonth; period = 'this month'; }
+    else if (t.frequency === 'quarterly') { daysLeft = daysLeftInQuarter; period = 'this quarter'; }
+    else return null; // daily tasks reset, not urgent in the same way
+    return { task: t.title, area: area?.name, frequency: t.frequency, daysLeft, period, isBoss: !!t.isBoss };
+  }).filter(Boolean).filter(t => {
+    // Flag as urgent: weekly with <=2 days, monthly with <=10 days, quarterly with <=20 days
+    if (t.frequency === 'weekly') return t.daysLeft <= 2;
+    if (t.frequency === 'monthly') return t.daysLeft <= 10;
+    if (t.frequency === 'quarterly') return t.daysLeft <= 20;
+    return false;
+  }).sort((a, b) => a.daysLeft - b.daysLeft);
+
   return {
     currentDateTime: now.toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }),
     dayOfWeek: now.toLocaleDateString('en-US', { weekday: 'long' }),
     dayOfMonth: now.getDate(),
-    daysLeftInMonth: new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate(),
+    daysLeftInMonth,
+    daysLeftInWeek,
+    daysLeftInQuarter,
     overallLevel: getOverallLevel(),
     totalXP: state.totalXP,
     currentMonthAreas: areas,
     dailyActivityLast14Days: last14,
+    urgentUncompletedTasks: urgentTasks,
   };
 }
 
 // ===== COACH: API CALL =====
 let coachLoading = false;
 
-const COACH_SYSTEM = `You are a personal productivity coach for a Harada Method quest system. The user tracks tasks across 8 life areas (Leadership, Creative Voice, Craft, Finance, Network, Family & Friends, Body, Mind) with daily/weekly/monthly/quarterly habits.
+const COACH_SYSTEM = `You are the user's Sensei — a personal productivity mentor inspired by the Harada Method. The user tracks tasks across 8 life areas (Leadership, Creative Voice, Craft, Finance, Network, Family & Friends, Body, Mind) with daily/weekly/monthly/quarterly habits.
 
 Your style:
 - Talk like a supportive friend, casual but insightful
 - Keep messages short — 2-3 sentences max per point
-- Reference specific numbers when relevant (streaks, percentages, levels)
+- Reference specific task names and numbers when relevant
 - Be honest about weak spots but encouraging
 
+URGENCY IS YOUR TOP PRIORITY. The data includes "urgentUncompletedTasks" — these are tasks the user is running out of time to complete in the current week/month/quarter. If there are urgent tasks:
+- Call them out by name with how many days are left
+- Boss tasks (isBoss: true) are extra important — they are milestone challenges
+- Be specific: "You still haven't done 'Storyboard one feature film' and there are only 8 days left this month"
+- Pick the 2-3 most urgent or impactful, don't list every single one
+
 When giving your initial check-in (first message), say exactly TWO things:
-1. One specific action to do TODAY based on their data
+1. The most urgent thing they need to do (based on deadline pressure + importance)
 2. One area that needs more focus overall and why
 
 When answering follow-up questions, be conversational and helpful. You can reference their progress data to give specific advice.
@@ -1422,8 +1456,8 @@ function renderCoachPanel() {
   if (!key) {
     body.innerHTML = `<div class="coach-empty">
       <div class="coach-empty-icon">${icon('coach', 40)}</div>
-      <div class="coach-empty-title">Set up your Coach</div>
-      <div class="coach-empty-desc">Add your Anthropic API key in Settings to get AI-powered coaching.</div>
+      <div class="coach-empty-title">Set up your Sensei</div>
+      <div class="coach-empty-desc">Add your Anthropic API key in Settings to get AI-powered guidance from your Sensei.</div>
       <button class="coach-btn" onclick="showSettings()">Open Settings</button>
     </div>`;
     inputBar.style.display = 'none';
@@ -1436,7 +1470,7 @@ function renderCoachPanel() {
     body.innerHTML = `<div class="coach-empty">
       <div class="coach-empty-icon">${icon('coach', 40)}</div>
       <div class="coach-empty-title">Ready when you are</div>
-      <div class="coach-empty-desc">Start a conversation with your coach for personalized advice based on your progress.</div>
+      <div class="coach-empty-desc">Start a conversation with your sensei for personalized guidance based on your progress.</div>
       <button class="coach-btn" onclick="startNewCoachSession()">Start Check-in</button>
     </div>`;
     return;
