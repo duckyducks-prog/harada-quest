@@ -1144,7 +1144,7 @@ async function handleSaveKey() {
     if (resp.ok) {
       saveApiKey(key);
       status.className = 'settings-status ok'; status.textContent = 'Key saved and verified!';
-      setTimeout(() => document.querySelector('.settings-overlay')?.remove(), 1000);
+      setTimeout(() => { document.querySelector('.settings-overlay')?.remove(); updateUI(); }, 1000);
     } else {
       const err = await resp.json().catch(() => ({}));
       status.className = 'settings-status err'; status.textContent = err.error?.message || `Error: ${resp.status}`;
