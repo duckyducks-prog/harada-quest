@@ -635,6 +635,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
       <div class="header-level" id="globalLevel">LV 1</div>
     </div>
   </div>
+  <div style="padding:4px 20px 0;font-family:var(--font-hand);font-size:0.88rem;color:var(--text-secondary);font-weight:600;" id="mainGoal"></div>
   <div class="xp-bar-container"><div class="xp-bar-fill" id="globalXpBar" style="width:0%"></div></div>
   <div class="xp-label"><span id="xpCurrent">0 XP</span><span id="xpNext">100 XP to Lv 2</span></div>
 
@@ -679,6 +680,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
     </div>
   </div>
   <div class="desktop-xp-section">
+    <div style="font-family:var(--font-hand);font-size:0.95rem;color:var(--text-secondary);font-weight:600;margin-bottom:4px;" id="mainGoalD"></div>
     <div class="xp-bar-container"><div class="xp-bar-fill" id="globalXpBarD" style="width:0%"></div></div>
     <div class="xp-label"><span id="xpCurrentD">0 XP</span><span id="xpNextD">100 XP to Lv 2</span></div>
   </div>
@@ -856,7 +858,7 @@ const TASKS = [
 
 // ===== STATE =====
 const STATE_KEY = 'harada-quest-state';
-function getDefaultState() { return { totalXP:0, areaXP:Object.fromEntries(AREAS.map(a=>[a.id,0])), completions:{}, streaks:{}, bossesDefeated:[] }; }
+function getDefaultState() { return { totalXP:0, areaXP:Object.fromEntries(AREAS.map(a=>[a.id,0])), completions:{}, streaks:{}, bossesDefeated:[], mainGoal:'Develop my Filmmaking Career' }; }
 let state = loadState();
 function loadState() { try { const s=localStorage.getItem(STATE_KEY); if(s) return {...getDefaultState(),...JSON.parse(s)}; } catch(e){} return getDefaultState(); }
 function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
@@ -956,14 +958,17 @@ function updateUI() {
 }
 function updateGlobalBar() {
   const l=getOverallLevel(); const p=getLevelProgress(state.totalXP);
+  const goal = state.mainGoal || 'Set your main goal';
   document.getElementById('globalLevel').textContent=`LV ${l}`;
   document.getElementById('globalXpBar').style.width=`${Math.min(100,p*100)}%`;
   document.getElementById('xpCurrent').textContent=`${state.totalXP} XP`;
   document.getElementById('xpNext').textContent=`${xpForLevel(l+1)-state.totalXP} XP to Lv ${l+1}`;
+  const mg=document.getElementById('mainGoal'); if(mg) mg.textContent=`"${goal}"`;
   const ld=document.getElementById('globalLevelD');
   if(ld) { ld.textContent=`LV ${l}`; document.getElementById('globalXpBarD').style.width=`${Math.min(100,p*100)}%`;
     document.getElementById('xpCurrentD').textContent=`${state.totalXP} XP`;
-    document.getElementById('xpNextD').textContent=`${xpForLevel(l+1)-state.totalXP} XP to Lv ${l+1}`; }
+    document.getElementById('xpNextD').textContent=`${xpForLevel(l+1)-state.totalXP} XP to Lv ${l+1}`;
+    const mgd=document.getElementById('mainGoalD'); if(mgd) mgd.textContent=`"${goal}"`; }
 }
 
 // Helper: render task card HTML
@@ -1197,48 +1202,75 @@ function deleteApiKey() { localStorage.removeItem(API_KEY_STORE); }
 function showSettings() {
   const key = getApiKey();
   const masked = key ? '••••••••' + key.slice(-8) : '';
+  const goal = state.mainGoal || '';
   const overlay = document.createElement('div');
   overlay.className = 'settings-overlay';
-  overlay.innerHTML = `<div class="settings-card">
+  overlay.innerHTML = `<div class="settings-card" style="max-height:90vh;overflow-y:auto;">
     <div class="settings-title">Settings</div>
-    <div class="settings-desc">Enter your Anthropic API key to enable the AI Coach. Your key is stored only on this device and sent directly to Anthropic's API.</div>
-    <div class="settings-label">API Key</div>
+
+    <div class="settings-label" style="margin-top:14px">Main Goal</div>
+    <input class="settings-input" id="settingsGoalInput" type="text" placeholder="Your main Harada goal..." value="${goal}" />
+    <div style="font-size:0.68rem;color:var(--text-muted);margin-top:4px">The center of your Harada grid — what everything feeds into.</div>
+
+    <div class="settings-label" style="margin-top:18px">Sensei API Key</div>
+    <div class="settings-desc" style="margin-bottom:8px">Enter your Anthropic API key to enable the Sensei. Stored only on this device.</div>
     <input class="settings-input" id="settingsKeyInput" type="password" placeholder="sk-ant-..." value="${key}" />
     ${key ? `<div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px">Current: ${masked}</div>` : ''}
     <div id="settingsStatus"></div>
     <div class="settings-btns">
       <button class="settings-btn" onclick="this.closest('.settings-overlay').remove()">Cancel</button>
-      ${key ? `<button class="settings-btn danger" onclick="deleteApiKey();this.closest('.settings-overlay').remove();showToast('API key removed')">Remove</button>` : ''}
-      <button class="settings-btn primary" onclick="handleSaveKey()">Save</button>
+      <button class="settings-btn primary" onclick="handleSaveSettings()">Save</button>
     </div>
-    <div class="settings-cost">Each coaching request costs ~$0.01 with Claude Sonnet.</div>
+    <div class="settings-cost">Each Sensei request costs ~$0.01 with Claude Sonnet.</div>
+
+    <div style="margin-top:24px;padding-top:18px;border-top:2px solid var(--border)">
+      <div class="settings-label" style="color:var(--red)">Reset</div>
+      <div class="settings-btns" style="margin-top:8px">
+        <button class="settings-btn danger" onclick="if(confirm('Reset all XP, streaks, and completions? This cannot be undone.')){state.totalXP=0;state.areaXP=Object.fromEntries(AREAS.map(a=>[a.id,0]));state.completions={};state.streaks={};state.bossesDefeated=[];saveState();updateUI();this.closest('.settings-overlay').remove();showToast('Progress reset')}">Reset Progress</button>
+        <button class="settings-btn danger" onclick="if(confirm('Delete ALL data including API key and chat history? This cannot be undone.')){localStorage.clear();location.reload()}">Reset Everything</button>
+      </div>
+    </div>
   </div>`;
   document.body.appendChild(overlay);
 }
 
-async function handleSaveKey() {
-  const input = document.getElementById('settingsKeyInput');
+async function handleSaveSettings() {
+  const goalInput = document.getElementById('settingsGoalInput');
+  const keyInput = document.getElementById('settingsKeyInput');
   const status = document.getElementById('settingsStatus');
-  const key = input.value.trim();
-  if (!key) { status.className = 'settings-status err'; status.textContent = 'Please enter a key'; return; }
-  status.className = 'settings-status'; status.textContent = 'Validating...';
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 10, messages: [{ role: 'user', content: 'Say OK' }] })
-    });
-    if (resp.ok) {
-      saveApiKey(key);
-      status.className = 'settings-status ok'; status.textContent = 'Key saved and verified!';
-      setTimeout(() => { document.querySelector('.settings-overlay')?.remove(); updateUI(); }, 1000);
-    } else {
-      const err = await resp.json().catch(() => ({}));
-      status.className = 'settings-status err'; status.textContent = err.error?.message || `Error: ${resp.status}`;
+  const goal = goalInput.value.trim();
+  const key = keyInput.value.trim();
+
+  // Save goal
+  if (goal) { state.mainGoal = goal; saveState(); }
+
+  // Save/validate API key
+  if (key && key !== getApiKey()) {
+    status.className = 'settings-status'; status.textContent = 'Validating API key...';
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 10, messages: [{ role: 'user', content: 'Say OK' }] })
+      });
+      if (resp.ok) {
+        saveApiKey(key);
+        status.className = 'settings-status ok'; status.textContent = 'Saved!';
+        setTimeout(() => { document.querySelector('.settings-overlay')?.remove(); updateUI(); }, 800);
+      } else {
+        const err = await resp.json().catch(() => ({}));
+        status.className = 'settings-status err'; status.textContent = err.error?.message || `Error: ${resp.status}`;
+      }
+      return;
+    } catch (e) {
+      status.className = 'settings-status err'; status.textContent = 'Network error.';
+      return;
     }
-  } catch (e) {
-    status.className = 'settings-status err'; status.textContent = 'Network error. Check your connection.';
   }
+
+  // No key change, just close
+  document.querySelector('.settings-overlay')?.remove();
+  updateUI();
 }
 
 // ===== COACH: CONVERSATION =====
