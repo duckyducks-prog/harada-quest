@@ -2074,7 +2074,14 @@
       </div>
       <div class="desktop-col">
         <div class="desktop-checkin" id="desktopCheckin">
-          <div class="desktop-col-title">Today's Quests</div>
+          <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid var(--border)">
+            <button class="checkin-tab active" data-checkin-tab="daily" onclick="switchDesktopCheckinTab('daily')">
+              <span style="font-family:var(--font-hand);font-size:1.1rem;font-weight:700">Daily Tasks</span>
+            </button>
+            <button class="checkin-tab" data-checkin-tab="pending" onclick="switchDesktopCheckinTab('pending')">
+              <span style="font-family:var(--font-hand);font-size:1.1rem;font-weight:700">Pending Tasks</span>
+            </button>
+          </div>
           <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;" id="desktopCheckinDate"></p>
           <div class="desktop-tasks-scroll" id="desktopQuestList"></div>
         </div>
@@ -2543,6 +2550,12 @@
 
     // ===== DESKTOP RENDERING =====
     let desktopRadarChart = null;
+    let activeDesktopCheckinTab = 'daily';
+    function switchDesktopCheckinTab(tab) {
+      activeDesktopCheckinTab = tab;
+      document.querySelectorAll('#desktopCheckin .checkin-tab').forEach(t => t.classList.toggle('active', t.dataset.checkinTab === tab));
+      document.getElementById('desktopQuestList').innerHTML = areaTasksGroupHTML(AREAS, tab);
+    }
     function renderDesktop() {
       // Areas
       document.getElementById('desktopAreaGrid').innerHTML = AREAS.map(area => {
@@ -2567,7 +2580,7 @@
       }
       // Check-in
       document.getElementById('desktopCheckinDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-      document.getElementById('desktopQuestList').innerHTML = areaTasksGroupHTML(AREAS, 'all');
+      document.getElementById('desktopQuestList').innerHTML = areaTasksGroupHTML(AREAS, activeDesktopCheckinTab);
       // Bosses
       document.getElementById('desktopBossList').innerHTML = bossListHTML();
       // Stats
