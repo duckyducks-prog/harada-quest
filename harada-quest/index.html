@@ -483,11 +483,91 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
 .settings-gear:hover, .settings-gear:active { opacity: 1; }
 .settings-gear svg { width: 100%; height: 100%; stroke: var(--text-muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ===== COACH VIEW ===== */
+/* ===== COACH SIDE PANEL ===== */
+.coach-panel-backdrop {
+  position: fixed; inset: 0; z-index: 1500;
+  background: rgba(0,0,0,0.3); opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.coach-panel-backdrop.open { opacity: 1; pointer-events: auto; }
+
+.coach-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 1501;
+  width: 380px; max-width: 90vw;
+  background: var(--bg);
+  border-left: 2px solid var(--border);
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.coach-panel.open { transform: translateX(0); }
+
+.coach-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px; border-bottom: 2px solid var(--border);
+  background: var(--bg-card); flex-shrink: 0;
+}
+.coach-panel-title {
+  font-family: var(--font-hand); font-size: 1.3rem; font-weight: 700; color: var(--ink);
+}
+.coach-panel-close {
+  width: 30px; height: 30px; border-radius: 8px; border: 2px solid var(--border);
+  background: var(--bg); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.coach-panel-close:active { transform: scale(0.93); }
+.coach-panel-close svg { width: 14px; height: 14px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+.coach-panel-body {
+  flex: 1; overflow-y: auto; padding: 18px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.coach-panel-body::-webkit-scrollbar { width: 4px; }
+.coach-panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.coach-panel-input {
+  padding: 12px 18px; border-top: 2px solid var(--border);
+  background: var(--bg-card); flex-shrink: 0;
+  display: flex; gap: 8px; align-items: center;
+}
+.coach-panel-input input {
+  flex: 1; padding: 10px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.85rem; background: var(--bg);
+  color: var(--text); outline: none;
+}
+.coach-panel-input input:focus { border-color: var(--ink); }
+.coach-panel-input input::placeholder { color: var(--text-muted); }
+.coach-send-btn {
+  width: 38px; height: 38px; border-radius: var(--radius-sm);
+  background: var(--ink); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: transform 0.15s;
+}
+.coach-send-btn:active { transform: scale(0.93); }
+.coach-send-btn svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* FAB (floating action button) */
+.coach-fab {
+  position: fixed; bottom: 90px; right: 18px; z-index: 100;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--ink); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px var(--ink-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.coach-fab:active { transform: scale(0.93); }
+.coach-fab:hover { box-shadow: 0 6px 24px var(--ink-shadow); }
+.coach-fab svg { width: 24px; height: 24px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+@media (min-width: 768px) {
+  .coach-fab { bottom: 24px; right: 24px; }
+}
+
+/* Chat bubbles */
 .coach-chat { display: flex; flex-direction: column; gap: 12px; }
 .coach-bubble {
-  max-width: 85%; padding: 14px 16px;
-  font-size: 0.88rem; line-height: 1.5; color: var(--text);
+  max-width: 90%; padding: 12px 15px;
+  font-size: 0.85rem; line-height: 1.5; color: var(--text);
   animation: bubbleIn 0.3s ease both;
 }
 .coach-bubble.coach-msg {
@@ -503,39 +583,41 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
   border-radius: var(--radius) 2px var(--radius) var(--radius);
 }
 @keyframes bubbleIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
-.coach-bubble strong { font-weight: 700; }
-.coach-bubble .coach-label {
-  font-family: var(--font-hand); font-size: 0.78rem; font-weight: 700;
-  color: var(--ink); margin-bottom: 4px; display: block;
-}
-.coach-bubble.coach-msg .coach-label { color: var(--ink); }
-.coach-timestamp { font-size: 0.68rem; color: var(--text-muted); margin-top: 8px; text-align: center; }
-.coach-btn {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; padding: 14px;
-  background: var(--ink); border: none; border-radius: var(--radius);
-  font-family: var(--font-hand); font-size: 1.1rem; font-weight: 600;
-  color: white; cursor: pointer; transition: transform 0.15s;
-  margin-top: 8px;
-}
-.coach-btn:active { transform: scale(0.97); }
-.coach-btn:disabled { opacity: 0.6; cursor: default; }
-.coach-btn svg { width: 20px; height: 20px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+
 .coach-empty {
-  text-align: center; padding: 40px 20px; color: var(--text-muted);
+  text-align: center; padding: 40px 16px; color: var(--text-muted);
 }
 .coach-empty-icon { margin-bottom: 14px; }
 .coach-empty-title {
   font-family: var(--font-hand); font-size: 1.2rem; color: var(--text-secondary);
   font-weight: 600; margin-bottom: 6px;
 }
-.coach-empty-desc { font-size: 0.82rem; line-height: 1.4; }
+.coach-empty-desc { font-size: 0.82rem; line-height: 1.4; margin-bottom: 16px; }
+.coach-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 12px;
+  background: var(--ink); border: none; border-radius: var(--radius);
+  font-family: var(--font-hand); font-size: 1rem; font-weight: 600;
+  color: white; cursor: pointer; transition: transform 0.15s;
+}
+.coach-btn:active { transform: scale(0.97); }
+
+.coach-new-btn {
+  font-size: 0.7rem; font-weight: 600; color: var(--text-muted);
+  background: none; border: none; cursor: pointer; padding: 4px 8px;
+  font-family: var(--font-body); text-decoration: underline;
+}
+.coach-new-btn:hover { color: var(--ink); }
 
 /* Loading dots */
-.coach-loading { display: flex; align-items: flex-start; gap: 8px; padding: 10px 0; }
-.coach-loading-dots { display: flex; gap: 5px; padding: 14px 18px; background: var(--bg-card); border: 2px solid var(--border); border-radius: 2px var(--radius) var(--radius) var(--radius); }
+.coach-loading { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; }
+.coach-loading-dots {
+  display: flex; gap: 5px; padding: 12px 18px;
+  background: var(--bg-card); border: 2px solid var(--border);
+  border-radius: 2px var(--radius) var(--radius) var(--radius);
+}
 .coach-loading-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--ink);
+  width: 7px; height: 7px; border-radius: 50%; background: var(--ink);
   animation: coachPulse 1.4s infinite ease-in-out both;
 }
 .coach-loading-dot:nth-child(1) { animation-delay: -0.32s; }
@@ -584,11 +666,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
     <div id="statsContent"></div>
   </div>
 
-  <div class="view" id="view-coach">
-    <h2 style="font-family:var(--font-hand);font-size:1.6rem;margin-bottom:4px;color:var(--ink)">Your Coach</h2>
-    <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:18px;">AI-powered insights based on your progress</p>
-    <div id="coachContent"></div>
-  </div>
+
 </div>
 
 <!-- DESKTOP LAYOUT -->
@@ -632,8 +710,6 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
       <div id="desktopStreaks"></div>
       <div class="desktop-col-title" style="margin-top:14px;">Monthly Progress</div>
       <div id="desktopMonthlyBars"></div>
-      <div class="desktop-col-title" style="margin-top:14px;">Coach</div>
-      <div id="desktopCoachContent"></div>
     </div>
   </div>
 </div>
@@ -651,11 +727,34 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing:
     <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
     <span class="nav-label">Stats</span>
   </button>
-  <button class="nav-item" data-view="coach">
-    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg>
-    <span class="nav-label">Coach</span>
-  </button>
+
 </nav>
+
+<!-- Coach FAB -->
+<button class="coach-fab" onclick="openCoachPanel()" aria-label="Open Coach">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg>
+</button>
+
+<!-- Coach Side Panel -->
+<div class="coach-panel-backdrop" id="coachBackdrop" onclick="closeCoachPanel()"></div>
+<div class="coach-panel" id="coachPanel">
+  <div class="coach-panel-header">
+    <div class="coach-panel-title">Your Coach</div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <button class="coach-new-btn" onclick="startNewCoachSession()">New chat</button>
+      <div class="coach-panel-close" onclick="closeCoachPanel()">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="coach-panel-body" id="coachPanelBody"></div>
+  <div class="coach-panel-input" id="coachInputBar">
+    <input placeholder="Ask your coach..." onkeydown="handleCoachInput(event)" id="coachInput" />
+    <button class="coach-send-btn" onclick="sendFromInput()">
+      <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+    </button>
+  </div>
+</div>
 
 <script>
 // ===== HAND-DRAWN SVG ICONS =====
@@ -850,7 +949,6 @@ function updateUI() {
       if(active.id==='view-dashboard') renderDashboard();
       else if(active.id==='view-checkin') renderCheckin();
       else if(active.id==='view-stats') renderStats();
-      else if(active.id==='view-coach') renderCoach();
       else if(active.id==='view-area-detail') renderAreaDetail(active.dataset.areaId);
       else if(active.id==='view-monthly') renderMonthly();
     }
@@ -886,10 +984,7 @@ function taskCardHTML(task, areaColor) {
 // Helper: area tasks grouped HTML
 function areaTasksGroupHTML(areas_list, questListId) {
   return areas_list.map(area => {
-    const tasks=TASKS.filter(t=>t.areaId===area.id).filter(t=>{
-      if(t.frequency==='daily'||t.frequency==='weekly') return true;
-      return !isCompleted(t.id,t.frequency);
-    });
+    const tasks=TASKS.filter(t=>t.areaId===area.id);
     if(!tasks.length) return '';
     const done=tasks.filter(t=>isCompleted(t.id,t.frequency)).length;
     return `<div style="margin-bottom:14px">
@@ -1061,9 +1156,6 @@ function renderDesktop() {
       <div class="monthly-area-name">${area.name}</div>
       <div class="monthly-area-bar"><div class="monthly-area-bar-fill" style="width:${comp.pct}%"></div></div>
     </div><div class="monthly-area-pct">${comp.pct}%</div></div>`;}).join('');
-  // Coach
-  const dcc = document.getElementById('desktopCoachContent');
-  if (dcc) dcc.innerHTML = coachContentHTML();
 }
 
 function showDesktopAreaDetail(areaId) {
@@ -1301,34 +1393,56 @@ function handleCoachInput(e) {
   }
 }
 
-// ===== COACH: RENDER =====
-function coachContentHTML() {
+// ===== COACH: PANEL & RENDER =====
+function openCoachPanel() {
+  document.getElementById('coachBackdrop').classList.add('open');
+  document.getElementById('coachPanel').classList.add('open');
+  renderCoachPanel();
+  setTimeout(() => document.getElementById('coachInput')?.focus(), 350);
+}
+function closeCoachPanel() {
+  document.getElementById('coachBackdrop').classList.remove('open');
+  document.getElementById('coachPanel').classList.remove('open');
+}
+
+function sendFromInput() {
+  const input = document.getElementById('coachInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  sendCoachMessage(msg);
+}
+
+function renderCoachPanel() {
+  const body = document.getElementById('coachPanelBody');
+  const inputBar = document.getElementById('coachInputBar');
   const key = getApiKey();
   const history = getCoachHistory();
 
   if (!key) {
-    return `<div class="coach-empty">
+    body.innerHTML = `<div class="coach-empty">
       <div class="coach-empty-icon">${icon('coach', 40)}</div>
       <div class="coach-empty-title">Set up your Coach</div>
       <div class="coach-empty-desc">Add your Anthropic API key in Settings to get AI-powered coaching.</div>
-      <button class="coach-btn" style="margin-top:16px" onclick="showSettings()">Open Settings</button>
+      <button class="coach-btn" onclick="showSettings()">Open Settings</button>
     </div>`;
+    inputBar.style.display = 'none';
+    return;
   }
 
+  inputBar.style.display = 'flex';
+
   if (history.length === 0 && !coachLoading) {
-    return `<div class="coach-empty">
+    body.innerHTML = `<div class="coach-empty">
       <div class="coach-empty-icon">${icon('coach', 40)}</div>
       <div class="coach-empty-title">Ready when you are</div>
-      <div class="coach-empty-desc">Start a conversation with your coach for personalized advice.</div>
-    </div>
-    <button class="coach-btn" onclick="startNewCoachSession()">
-      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      Start Check-in
-    </button>`;
+      <div class="coach-empty-desc">Start a conversation with your coach for personalized advice based on your progress.</div>
+      <button class="coach-btn" onclick="startNewCoachSession()">Start Check-in</button>
+    </div>`;
+    return;
   }
 
   let html = '<div class="coach-chat">';
-
   for (const msg of history) {
     if (msg.role === 'assistant') {
       html += `<div class="coach-bubble coach-msg">${msg.content}</div>`;
@@ -1336,31 +1450,17 @@ function coachContentHTML() {
       html += `<div class="coach-bubble user-msg">${msg.content}</div>`;
     }
   }
-
   if (coachLoading) {
     html += `<div class="coach-loading"><div class="coach-loading-dots"><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div></div></div>`;
   }
-
   html += '</div>';
+  body.innerHTML = html;
 
-  // Input bar for follow-up questions
-  if (!coachLoading && history.length > 0) {
-    html += `<div style="display:flex;gap:8px;margin-top:14px;align-items:center;">
-      <input class="settings-input" style="flex:1;margin:0;font-size:0.85rem;" placeholder="Ask your coach..." onkeydown="handleCoachInput(event)" />
-      <button class="coach-btn" style="width:auto;margin:0;padding:10px 14px;font-size:0.85rem;" onclick="startNewCoachSession()">New</button>
-    </div>`;
-  }
-
-  return html;
+  // Scroll to bottom
+  body.scrollTop = body.scrollHeight;
 }
 
-function renderCoach() {
-  const el = document.getElementById('coachContent');
-  if (el) el.innerHTML = coachContentHTML();
-  // Scroll to bottom of chat
-  const chat = el?.querySelector('.coach-chat');
-  if (chat) chat.scrollTop = chat.scrollHeight;
-}
+function renderCoach() { renderCoachPanel(); }
 
 // ===== INIT =====
 updateUI(); renderDashboard();
