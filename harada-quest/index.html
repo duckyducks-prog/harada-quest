@@ -1,1311 +1,2654 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#F0EDE4">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#F0EDE4">
 <title>Harada Quest</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<style>
-:root {
-  --bg: #EEE7D9;
-  --bg-card: #F8F4ED;
-  --text: #1A1A2E;
-  --text-secondary: #4A4A5A;
-  --text-muted: #8E8E9A;
-  --border: #D8D1C4;
-  --ink: #1B7CD1;
-  --ink-light: #4A9BE5;
-  --ink-faint: rgba(27,124,209,0.1);
-  --ink-shadow: rgba(27,124,209,0.25);
-  --red: #E4483D;
-  --red-faint: rgba(228,72,61,0.1);
-  --xp-gold: #E4483D;
-  --streak-fire: #E4483D;
-  --success: #2D8A4E;
-  --danger: #E4483D;
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-hand: 'Caveat', cursive;
-  --font-body: 'DM Sans', system-ui, sans-serif;
-  --radius: 14px;
-  --radius-sm: 10px;
-}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,800;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #EEE7D9;
+      --bg-card: #F8F4ED;
+      --text: #1A1A2E;
+      --text-secondary: #4A4A5A;
+      --text-muted: #8E8E9A;
+      --border: #D8D1C4;
+      --ink: #1B7CD1;
+      --ink-light: #4A9BE5;
+      --ink-faint: rgba(27, 124, 209, 0.1);
+      --ink-shadow: rgba(27, 124, 209, 0.25);
+      --red: #E4483D;
+      --red-faint: rgba(228, 72, 61, 0.1);
+      --xp-gold: #E4483D;
+      --streak-fire: #E4483D;
+      --success: #2D8A4E;
+      --danger: #E4483D;
+      --font-display: 'Space Grotesk', system-ui, sans-serif;
+      --font-hand: 'Caveat', cursive;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100dvh;
-  overflow-x: hidden;
-}
+    html {
+      font-size: 16px;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+    }
 
-/* Paper texture */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 9999; opacity: 0.06;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 180px;
-}
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
 
-h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+    /* Paper texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.06;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px;
+    }
 
-.app { max-width: 480px; margin: 0 auto; padding-bottom: 90px; min-height: 100dvh; }
+    h1,
+    h2,
+    h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
 
-/* ===== INLINE SVG ICONS ===== */
-.icon-svg { display: inline-block; vertical-align: middle; }
-.icon-svg svg {
-  width: 100%; height: 100%;
-  stroke: var(--ink); fill: none; stroke-width: 2.2;
-  stroke-linecap: round; stroke-linejoin: round;
-}
-.icon-svg.filled svg { fill: var(--ink); stroke: none; }
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      padding-bottom: 90px;
+      min-height: 100dvh;
+    }
 
-/* ===== HEADER ===== */
-.header {
-  padding: 20px 20px 0;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.header-title {
-  font-family: var(--font-hand); font-size: 1.6rem; font-weight: 700;
-  color: var(--ink); letter-spacing: 0;
-}
-.header-level {
-  display: flex; align-items: center; gap: 6px;
-  font-family: var(--font-display); font-weight: 700; font-size: 0.8rem; color: var(--xp-gold);
-  background: var(--bg-card); padding: 5px 14px; border-radius: 20px;
-  border: 2px solid var(--xp-gold);
-}
+    /* ===== INLINE SVG ICONS ===== */
+    .icon-svg {
+      display: inline-block;
+      vertical-align: middle;
+    }
 
-/* ===== GLOBAL XP BAR ===== */
-.xp-bar-container { margin: 14px 20px 0; background: var(--border); border-radius: 6px; height: 8px; overflow: hidden; }
-.xp-bar-fill {
-  height: 100%; background: linear-gradient(90deg, #E4483D, #C83A30);
-  border-radius: 6px; transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.xp-label { display: flex; justify-content: space-between; margin: 5px 20px 0; font-size: 0.7rem; color: var(--text-muted); font-weight: 500; }
+    .icon-svg svg {
+      width: 100%;
+      height: 100%;
+      stroke: var(--ink);
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
 
-/* ===== VIEWS ===== */
-.view { display: none; padding: 20px; }
-.view.active { display: block; animation: fadeIn 0.25s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .icon-svg.filled svg {
+      fill: var(--ink);
+      stroke: none;
+    }
 
-.section-title {
-  font-family: var(--font-hand); font-size: 1.2rem;
-  color: var(--ink); margin-bottom: 14px; font-weight: 600;
-}
+    /* ===== HEADER ===== */
+    .header {
+      padding: 20px 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-/* ===== SWIPEABLE CARD CAROUSEL ===== */
-.carousel-wrapper { position: relative; margin-bottom: 24px; }
-.carousel {
-  display: flex; gap: 14px;
-  overflow-x: auto; scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  padding: 4px 0 16px;
-  scrollbar-width: none;
-}
-.carousel::-webkit-scrollbar { display: none; }
+    .header-title {
+      font-family: var(--font-hand);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0;
+    }
 
-.area-card {
-  flex: 0 0 calc(100% - 40px);
-  scroll-snap-align: center;
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  padding: 22px;
-  border: 2px solid var(--border);
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative; overflow: hidden;
-  min-height: 155px;
-  display: flex; flex-direction: column; justify-content: space-between;
-}
-.area-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-  background: var(--ink);
-}
-.area-card:active { transform: scale(0.97); }
+    .header-level {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--xp-gold);
+      background: var(--bg-card);
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 2px solid var(--xp-gold);
+    }
 
-.area-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
-.area-card-icon { width: 36px; height: 36px; }
-.area-card-level-badge {
-  font-family: var(--font-display); font-size: 0.72rem; font-weight: 700;
-  color: white; background: var(--ink);
-  padding: 3px 10px; border-radius: 10px;
-}
-.area-card-name {
-  font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
-  margin: 10px 0 3px; color: var(--text);
-}
-.area-card-progress-text { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
-.area-card-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.area-card-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; background: var(--ink); }
-.area-card-tasks-done {
-  display: flex; align-items: center; gap: 6px;
-  margin-top: 10px; font-size: 0.75rem; color: var(--text-secondary); font-weight: 500;
-}
+    /* ===== GLOBAL XP BAR ===== */
+    .xp-bar-container {
+      margin: 14px 20px 0;
+      background: var(--border);
+      border-radius: 6px;
+      height: 8px;
+      overflow: hidden;
+    }
 
-.carousel-dots { display: flex; justify-content: center; gap: 6px; }
-.carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
-.carousel-dot.active { background: var(--ink); width: 18px; border-radius: 3px; }
+    .xp-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #E4483D, #C83A30);
+      border-radius: 6px;
+      transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
 
-/* ===== MONTHLY PROGRESS BUTTON ===== */
-.monthly-btn {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; padding: 14px;
-  background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius);
-  font-family: var(--font-hand); font-size: 1.1rem; font-weight: 600;
-  color: var(--ink); cursor: pointer;
-  transition: transform 0.15s;
-  margin-bottom: 24px;
-}
-.monthly-btn:active { transform: scale(0.97); }
-.monthly-btn svg { width: 20px; height: 20px; stroke: var(--ink); fill: none; stroke-width: 2.2; stroke-linecap: round; }
+    .xp-label {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 20px 0;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
 
-/* ===== AREA DETAIL VIEW ===== */
-.area-detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-.back-btn {
-  width: 34px; height: 34px; border-radius: 10px; border: 2px solid var(--border);
-  background: var(--bg-card); display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-}
-.back-btn svg { width: 16px; height: 16px; stroke: var(--ink); fill: none; stroke-width: 2.5; stroke-linecap: round; }
-.back-btn:active { transform: scale(0.93); }
+    /* ===== VIEWS ===== */
+    .view {
+      display: none;
+      padding: 20px;
+    }
 
-.area-detail-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-.area-detail-title .icon-svg { width: 28px; height: 28px; }
-.area-detail-level { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+    .view.active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
 
-.area-detail-xp-bar { height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
-.area-detail-xp-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; background: var(--ink); }
-.area-detail-xp-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 18px; }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
 
-/* ===== MONTHLY OVERVIEW ===== */
-.monthly-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
-.monthly-subtitle { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 22px; font-family: var(--font-hand); font-size: 1rem; }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-.monthly-area-row {
-  background: var(--bg-card); border-radius: var(--radius-sm);
-  padding: 14px; margin-bottom: 8px; border: 2px solid var(--border);
-  display: flex; align-items: center; gap: 12px;
-}
-.monthly-area-icon { width: 24px; height: 24px; flex-shrink: 0; }
-.monthly-area-info { flex: 1; min-width: 0; }
-.monthly-area-name { font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; margin-bottom: 5px; }
-.monthly-area-bar { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.monthly-area-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; background: var(--ink); }
-.monthly-area-pct {
-  font-family: var(--font-display); font-size: 0.82rem; font-weight: 700;
-  flex-shrink: 0; min-width: 36px; text-align: right; color: var(--ink);
-}
+    .section-title {
+      font-family: var(--font-hand);
+      font-size: 1.2rem;
+      color: var(--ink);
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
 
-.monthly-radar-container {
-  background: var(--bg-card); border-radius: var(--radius);
-  padding: 22px 14px; margin-bottom: 18px; border: 2px solid var(--border);
-}
+    /* ===== SWIPEABLE CARD CAROUSEL ===== */
+    .carousel-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+    }
 
-/* ===== TASK CARD ===== */
-.task-card {
-  background: var(--bg-card); border-radius: var(--radius-sm);
-  padding: 13px 15px; margin-bottom: 7px;
-  display: flex; align-items: center; gap: 12px;
-  border: 2px solid var(--border); cursor: pointer;
-  transition: transform 0.15s, background 0.2s;
-  position: relative; overflow: hidden;
-  user-select: none; -webkit-user-select: none;
-}
-.task-card:active { transform: scale(0.98); }
-.task-card.completed {
-  background: linear-gradient(135deg, #4A9BE5 0%, #3088D8 30%, #2578C8 50%, #3D90DD 70%, #5AA5E8 100%);
-  border-color: #1B7CD1;
-  position: relative;
-  animation: paintIn 0.5s ease both;
-}
-.task-card.completed::after {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0.12;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 120px;
-}
-.task-card.completed .task-title {
-  color: #F0EDE4;
-  text-decoration: line-through;
-  text-decoration-color: rgba(240, 237, 228, 0.4);
-  text-decoration-thickness: 1.5px;
-}
-.task-card.completed .task-freq { background: rgba(255,255,255,0.2); color: #F0EDE4; }
-.task-card.completed .task-xp { color: #F0EDE4; }
-.task-card.completed .task-streak { color: #F0EDE4; }
-@keyframes paintIn {
-  0% { background-size: 0% 100%; opacity: 0.7; }
-  100% { background-size: 100% 100%; opacity: 1; }
-}
+    .carousel {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: 4px 0 16px;
+      scrollbar-width: none;
+    }
 
-.task-checkbox {
-  width: 24px; height: 24px; border-radius: 6px;
-  border: 2.5px solid var(--border); flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  background: var(--bg);
-}
-.task-card.completed .task-checkbox {
-  background: #F0EDE4; border-color: #F0EDE4;
-  animation: checkBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.task-checkbox svg {
-  width: 13px; height: 13px; stroke: var(--ink); stroke-width: 3; fill: none;
-  opacity: 0; transform: scale(0); stroke-linecap: round; stroke-linejoin: round;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.task-card.completed .task-checkbox svg { opacity: 1; transform: scale(1); }
+    .carousel::-webkit-scrollbar {
+      display: none;
+    }
 
-.task-info { flex: 1; min-width: 0; }
-.task-title { font-size: 0.85rem; font-weight: 500; line-height: 1.3; }
-.task-meta { display: flex; align-items: center; gap: 7px; margin-top: 3px; }
-.task-freq {
-  font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.04em; padding: 2px 6px; border-radius: 4px;
-  background: var(--ink-faint); color: var(--ink);
-}
-.task-streak { font-size: 0.7rem; font-weight: 700; color: var(--streak-fire); }
-.task-xp { font-size: 0.7rem; font-weight: 700; color: var(--xp-gold); margin-left: auto; flex-shrink: 0; }
+    .area-card {
+      flex: 0 0 calc(100% - 40px);
+      scroll-snap-align: center;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 22px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+      min-height: 155px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
-/* ===== BOSS CARD ===== */
-.boss-card {
-  background: var(--bg-card); border-radius: var(--radius);
-  padding: 16px; margin-bottom: 10px;
-  border: 2px solid var(--red); position: relative; overflow: hidden; cursor: pointer;
-}
-.boss-label {
-  font-family: var(--font-hand); font-size: 0.9rem;
-  color: var(--red); font-weight: 600; margin-bottom: 4px;
-}
-.boss-title { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
-.boss-power-bar { height: 6px; background: var(--ink-faint); border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
-.boss-power-fill { height: 100%; background: var(--red); border-radius: 3px; transition: width 0.6s ease; }
-.boss-power-label { font-size: 0.68rem; color: var(--text-secondary); font-weight: 500; }
+    .area-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--ink);
+    }
 
-/* ===== XP FLOAT ===== */
-.xp-float {
-  position: fixed; font-family: var(--font-hand); font-weight: 700;
-  font-size: 1.4rem; color: var(--xp-gold); pointer-events: none; z-index: 1000;
-  animation: floatUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-@keyframes floatUp {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  70% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-80px) scale(1.3); }
-}
-@keyframes checkBounce { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    .area-card:active {
+      transform: scale(0.97);
+    }
 
-/* ===== LEVEL UP OVERLAY ===== */
-.level-up-overlay {
-  position: fixed; inset: 0; z-index: 2000;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  background: rgba(240, 237, 228, 0.96); backdrop-filter: blur(8px);
-  animation: overlayIn 0.5s ease; cursor: pointer;
-}
-@keyframes overlayIn { 0% { opacity: 0; } 100% { opacity: 1; } }
-.level-up-badge {
-  width: 110px; height: 110px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 24px; background: var(--ink-faint); border: 3px solid var(--ink);
-  animation: badgePop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-.level-up-badge .icon-svg { width: 50px; height: 50px; }
-@keyframes badgePop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
-.level-up-text {
-  font-family: var(--font-hand); font-size: 1.2rem;
-  color: var(--ink); font-weight: 700; margin-bottom: 6px;
-  animation: textIn 0.4s 0.4s ease both;
-}
-.level-up-level { font-family: var(--font-display); font-size: 2.8rem; font-weight: 700; animation: textIn 0.4s 0.5s ease both; }
-.level-up-area { font-size: 1rem; color: var(--text-secondary); margin-top: 4px; animation: textIn 0.4s 0.6s ease both; }
-.level-up-dismiss { font-size: 0.72rem; color: var(--text-muted); margin-top: 30px; animation: textIn 0.4s 0.8s ease both; }
-@keyframes textIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+    .area-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
 
-/* ===== TOAST ===== */
-.toast {
-  position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-  background: var(--bg-card); border: 2px solid var(--ink); border-radius: var(--radius);
-  padding: 10px 18px; font-family: var(--font-hand); font-weight: 600; font-size: 1rem;
-  color: var(--ink);
-  z-index: 1500; box-shadow: 0 6px 24px rgba(0,0,0,0.1); white-space: nowrap;
-  animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, toastOut 0.3s 2.5s ease forwards;
-}
-@keyframes toastIn { 0% { transform: translateX(-50%) translateY(-100px); } 100% { transform: translateX(-50%) translateY(0); } }
-@keyframes toastOut { 0% { transform: translateX(-50%) translateY(0); opacity: 1; } 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; } }
+    .area-card-icon {
+      width: 36px;
+      height: 36px;
+    }
 
-/* ===== BOTTOM NAV ===== */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--bg-card); border-top: 2px solid var(--border);
-  display: flex; justify-content: center; padding: 6px 0;
-  padding-bottom: max(6px, env(safe-area-inset-bottom)); z-index: 100;
-}
-.nav-item {
-  flex: 1; max-width: 110px;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 7px 0; cursor: pointer; color: var(--text-muted);
-  transition: color 0.2s; background: none; border: none; font-family: var(--font-body);
-}
-.nav-item.active { color: var(--ink); }
-.nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-.nav-item.active svg { stroke-width: 2.8; }
-.nav-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .area-card-level-badge {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: white;
+      background: var(--ink);
+      padding: 3px 10px;
+      border-radius: 10px;
+    }
 
-/* ===== STATS ===== */
-.stat-row {
-  display: flex; justify-content: space-between;
-  background: var(--bg-card); border-radius: var(--radius-sm);
-  padding: 14px; margin-bottom: 7px; border: 2px solid var(--border);
-}
-.stat-label { font-size: 0.78rem; color: var(--text-secondary); }
-.stat-value { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+    .area-card-name {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 10px 0 3px;
+      color: var(--text);
+    }
 
-.heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 10px; }
-.heatmap-cell { aspect-ratio: 1; border-radius: 3px; background: var(--border); }
-.heatmap-cell.l1 { background: #C2DBF0; } .heatmap-cell.l2 { background: #7AB5E3; }
-.heatmap-cell.l3 { background: #3D94D6; } .heatmap-cell.l4 { background: var(--ink); }
+    .area-card-progress-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
 
-.streak-card {
-  background: var(--bg-card); border-radius: var(--radius-sm);
-  padding: 12px 14px; margin-bottom: 7px; border: 2px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
-}
-.streak-fire-icon { font-size: 1.2rem; animation: firePulse 1.5s ease-in-out infinite; }
-@keyframes firePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
-.streak-info { flex: 1; }
-.streak-task-name { font-size: 0.78rem; font-weight: 500; }
-.streak-count { font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--red); }
-.streak-mult {
-  font-size: 0.68rem; font-weight: 700;
-  background: var(--ink-faint); color: var(--ink); padding: 2px 7px; border-radius: 5px;
-}
+    .area-card-bar {
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
 
-/* ===== DESKTOP LAYOUT ===== */
-.app-desktop { display: none; }
-@media (min-width: 768px) {
-  .app { display: none; }
-  .bottom-nav { display: none; }
-  .app-desktop { display: block; max-width: 1200px; margin: 0 auto; padding: 24px 32px 40px; }
-  .desktop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .desktop-header .header-title { font-size: 1.8rem; }
-  .desktop-xp-section { margin-bottom: 28px; }
-  .desktop-xp-section .xp-bar-container { margin: 12px 0 0; }
-  .desktop-xp-section .xp-label { margin: 6px 0 0; }
-  .desktop-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; align-items: start; }
-  .desktop-col { min-width: 0; }
-  .desktop-col-title { font-family: var(--font-hand); font-size: 1.3rem; font-weight: 600; margin-bottom: 14px; color: var(--ink); }
-  .desktop-area-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 18px; }
-  .desktop-area-card {
-    background: var(--bg-card); border-radius: var(--radius-sm);
-    padding: 13px; border: 2px solid var(--border);
-    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
-    position: relative; overflow: hidden;
-  }
-  .desktop-area-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: var(--ink); }
-  .desktop-area-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(27,124,209,0.1); }
-  .desktop-area-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
-  .desktop-area-card-icon { width: 22px; height: 22px; }
-  .desktop-area-card-lv { font-family: var(--font-display); font-size: 0.62rem; font-weight: 700; color: white; background: var(--ink); padding: 2px 7px; border-radius: 7px; }
-  .desktop-area-card-name { font-family: var(--font-display); font-size: 0.78rem; font-weight: 700; margin-bottom: 5px; }
-  .desktop-area-card-bar { height: 4px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .desktop-area-card-bar-fill { height: 100%; border-radius: 3px; background: var(--ink); }
-  .desktop-area-card-meta { font-size: 0.65rem; color: var(--text-muted); margin-top: 5px; }
-  .desktop-radar { background: var(--bg-card); border-radius: var(--radius); padding: 18px 14px; margin-bottom: 18px; border: 2px solid var(--border); }
-  .desktop-tasks-scroll { max-height: calc(100vh - 180px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; padding-right: 4px; }
-  .desktop-tasks-scroll::-webkit-scrollbar { width: 4px; }
-  .desktop-tasks-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  .desktop-stats-card { background: var(--bg-card); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; border: 2px solid var(--border); }
-  .desktop-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 14px; }
-  .desktop-stat-item { text-align: center; padding: 10px 6px; background: var(--bg); border-radius: var(--radius-sm); }
-  .desktop-stat-value { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; display: block; }
-  .desktop-stat-label { font-size: 0.65rem; color: var(--text-muted); margin-top: 2px; }
-  .desktop-area-detail { display: none; }
-  .desktop-area-detail.active { display: block; }
-  .desktop-checkin { display: block; }
-  .desktop-checkin.hidden { display: none; }
-}
-@media (min-width: 1100px) { .desktop-grid { gap: 32px; } }
+    .area-card-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s ease;
+      background: var(--ink);
+    }
 
-/* ===== CHECK-IN SUB-TABS ===== */
-.checkin-tab {
-  flex: 1; padding: 10px 0; background: none; border: none; cursor: pointer;
-  color: var(--text-muted); position: relative; transition: color 0.2s;
-  font-family: var(--font-body);
-}
-.checkin-tab.active { color: var(--ink); }
-.checkin-tab.active::after {
-  content: ''; position: absolute; bottom: -2px; left: 10%; right: 10%;
-  height: 3px; background: var(--ink); border-radius: 2px;
-}
+    .area-card-tasks-done {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
 
-/* ===== SETTINGS FULL SCREEN ===== */
-.settings-overlay {
-  position: fixed; inset: 0; z-index: 2000;
-  background: var(--bg);
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-  animation: overlayIn 0.3s ease;
-}
-.settings-inner {
-  max-width: 520px; margin: 0 auto; padding: 20px 20px 40px;
-}
-.settings-header {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
-}
-.settings-title {
-  font-family: var(--font-hand); font-size: 1.6rem; color: var(--ink); font-weight: 700;
-}
-.settings-close {
-  width: 34px; height: 34px; border-radius: 10px; border: 2px solid var(--border);
-  background: var(--bg-card); display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-}
-.settings-close:active { transform: scale(0.93); }
-.settings-close svg { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
 
-.settings-section {
-  background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius);
-  padding: 18px; margin-bottom: 14px;
-}
-.settings-section-title {
-  font-family: var(--font-hand); font-size: 1.15rem; color: var(--ink);
-  font-weight: 700; margin-bottom: 12px;
-}
-.settings-label {
-  font-family: var(--font-display); font-size: 0.7rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); margin-bottom: 5px;
-}
-.settings-input {
-  width: 100%; padding: 9px 12px; border: 2px solid var(--border); border-radius: var(--radius-sm);
-  font-family: var(--font-body); font-size: 0.82rem; background: var(--bg);
-  color: var(--text); outline: none; transition: border-color 0.2s;
-}
-.settings-input:focus { border-color: var(--ink); }
-.settings-input::placeholder { color: var(--text-muted); }
-.settings-input-sm {
-  padding: 7px 10px; font-size: 0.78rem; border: 2px solid var(--border);
-  border-radius: 8px; font-family: var(--font-body); background: var(--bg);
-  color: var(--text); outline: none; width: 100%;
-}
-.settings-input-sm:focus { border-color: var(--ink); }
-.settings-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; margin-top: 4px; }
-.settings-btns { display: flex; gap: 8px; margin-top: 16px; }
-.settings-btn {
-  flex: 1; padding: 10px; border-radius: var(--radius-sm); border: 2px solid var(--border);
-  font-family: var(--font-display); font-size: 0.82rem; font-weight: 700;
-  cursor: pointer; transition: all 0.15s; background: var(--bg-card); color: var(--text);
-}
-.settings-btn.primary { background: var(--ink); color: white; border-color: var(--ink); }
-.settings-btn.primary:active { transform: scale(0.97); }
-.settings-btn.danger { color: var(--red); border-color: var(--red); }
-.settings-status { font-size: 0.72rem; margin-top: 10px; font-weight: 500; }
-.settings-status.ok { color: var(--success); }
-.settings-status.err { color: var(--red); }
+    .carousel-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all 0.3s;
+    }
 
-/* Area accordion in settings */
-.settings-area-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer;
-}
-.settings-area-row:last-child { border-bottom: none; }
-.settings-area-icon { width: 22px; height: 22px; flex-shrink: 0; }
-.settings-area-name {
-  font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; flex: 1;
-}
-.settings-area-chevron { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; transition: transform 0.2s; }
-.settings-area-chevron.open { transform: rotate(90deg); }
-.settings-area-tasks {
-  display: none; padding: 10px 0 6px 32px;
-}
-.settings-area-tasks.open { display: block; }
-.settings-task-row {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
-}
-.settings-task-row input { flex: 1; }
-.settings-task-freq {
-  width: 90px; padding: 7px 6px; font-size: 0.72rem; border: 2px solid var(--border);
-  border-radius: 8px; font-family: var(--font-body); background: var(--bg);
-  color: var(--text); outline: none;
-}
-.settings-task-xp {
-  width: 50px; padding: 7px 6px; font-size: 0.72rem; border: 2px solid var(--border);
-  border-radius: 8px; font-family: var(--font-body); background: var(--bg);
-  color: var(--text); outline: none; text-align: center;
-}
+    .carousel-dot.active {
+      background: var(--ink);
+      width: 18px;
+      border-radius: 3px;
+    }
 
-/* Settings gear button */
-.settings-gear {
-  width: 28px; height: 28px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s;
-  margin-right: 10px;
-}
-.settings-gear:hover, .settings-gear:active { opacity: 1; }
-.settings-gear svg { width: 100%; height: 100%; stroke: var(--text-muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    /* ===== MONTHLY PROGRESS BUTTON ===== */
+    .monthly-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--font-hand);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      transition: transform 0.15s;
+      margin-bottom: 24px;
+    }
 
-/* ===== COACH SIDE PANEL ===== */
-.coach-panel-backdrop {
-  position: fixed; inset: 0; z-index: 1500;
-  background: rgba(0,0,0,0.3); opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-.coach-panel-backdrop.open { opacity: 1; pointer-events: auto; }
+    .monthly-btn:active {
+      transform: scale(0.97);
+    }
 
-.coach-panel {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 1501;
-  width: 380px; max-width: 90vw;
-  background: var(--bg);
-  border-left: 2px solid var(--border);
-  display: flex; flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.coach-panel.open { transform: translateX(0); }
+    .monthly-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--ink);
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+    }
 
-.coach-panel-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 18px; border-bottom: 2px solid var(--border);
-  background: var(--bg-card); flex-shrink: 0;
-}
-.coach-panel-title {
-  font-family: var(--font-hand); font-size: 1.3rem; font-weight: 700; color: var(--ink);
-}
-.coach-panel-close {
-  width: 30px; height: 30px; border-radius: 8px; border: 2px solid var(--border);
-  background: var(--bg); display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0;
-}
-.coach-panel-close:active { transform: scale(0.93); }
-.coach-panel-close svg { width: 14px; height: 14px; stroke: var(--text-muted); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    /* ===== AREA DETAIL VIEW ===== */
+    .area-detail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
 
-.coach-panel-body {
-  flex: 1; overflow-y: auto; padding: 18px;
-  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-}
-.coach-panel-body::-webkit-scrollbar { width: 4px; }
-.coach-panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .back-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
 
-.coach-panel-input {
-  padding: 12px 18px; border-top: 2px solid var(--border);
-  background: var(--bg-card); flex-shrink: 0;
-  display: flex; gap: 8px; align-items: center;
-}
-.coach-panel-input input {
-  flex: 1; padding: 10px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm);
-  font-family: var(--font-body); font-size: 0.85rem; background: var(--bg);
-  color: var(--text); outline: none;
-}
-.coach-panel-input input:focus { border-color: var(--ink); }
-.coach-panel-input input::placeholder { color: var(--text-muted); }
-.coach-send-btn {
-  width: 38px; height: 38px; border-radius: var(--radius-sm);
-  background: var(--ink); border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: transform 0.15s;
-}
-.coach-send-btn:active { transform: scale(0.93); }
-.coach-send-btn svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .back-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--ink);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
 
-/* FAB (floating action button) */
-.coach-fab {
-  position: fixed; bottom: 90px; right: 18px; z-index: 100;
-  width: 52px; height: 52px; border-radius: 50%;
-  background: var(--ink); border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 16px var(--ink-shadow);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.coach-fab:active { transform: scale(0.93); }
-.coach-fab:hover { box-shadow: 0 6px 24px var(--ink-shadow); }
-.coach-fab svg { width: 24px; height: 24px; stroke: white; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-@media (min-width: 768px) {
-  .coach-fab { bottom: 24px; right: 24px; }
-}
+    .back-btn:active {
+      transform: scale(0.93);
+    }
 
-/* Chat bubbles */
-.coach-chat { display: flex; flex-direction: column; gap: 12px; }
-.coach-bubble {
-  max-width: 90%; padding: 12px 15px;
-  font-size: 0.85rem; line-height: 1.5; color: var(--text);
-  animation: bubbleIn 0.3s ease both;
-}
-.coach-bubble.coach-msg {
-  align-self: flex-start;
-  background: var(--bg-card); border: 2px solid var(--border);
-  border-radius: 2px var(--radius) var(--radius) var(--radius);
-}
-.coach-bubble.coach-msg:nth-child(2) { animation-delay: 0.15s; }
-.coach-bubble.coach-msg:nth-child(3) { animation-delay: 0.3s; }
-.coach-bubble.user-msg {
-  align-self: flex-end;
-  background: var(--ink); color: white;
-  border-radius: var(--radius) 2px var(--radius) var(--radius);
-}
-@keyframes bubbleIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+    .area-detail-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.coach-empty {
-  text-align: center; padding: 40px 16px; color: var(--text-muted);
-}
-.coach-empty-icon { margin-bottom: 14px; }
-.coach-empty-title {
-  font-family: var(--font-hand); font-size: 1.2rem; color: var(--text-secondary);
-  font-weight: 600; margin-bottom: 6px;
-}
-.coach-empty-desc { font-size: 0.82rem; line-height: 1.4; margin-bottom: 16px; }
-.coach-btn {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; padding: 12px;
-  background: var(--ink); border: none; border-radius: var(--radius);
-  font-family: var(--font-hand); font-size: 1rem; font-weight: 600;
-  color: white; cursor: pointer; transition: transform 0.15s;
-}
-.coach-btn:active { transform: scale(0.97); }
+    .area-detail-title .icon-svg {
+      width: 28px;
+      height: 28px;
+    }
 
-.coach-new-btn {
-  font-size: 0.7rem; font-weight: 600; color: var(--text-muted);
-  background: none; border: none; cursor: pointer; padding: 4px 8px;
-  font-family: var(--font-body); text-decoration: underline;
-}
-.coach-new-btn:hover { color: var(--ink); }
+    .area-detail-level {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
 
-/* Loading dots */
-.coach-loading { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; }
-.coach-loading-dots {
-  display: flex; gap: 5px; padding: 12px 18px;
-  background: var(--bg-card); border: 2px solid var(--border);
-  border-radius: 2px var(--radius) var(--radius) var(--radius);
-}
-.coach-loading-dot {
-  width: 7px; height: 7px; border-radius: 50%; background: var(--ink);
-  animation: coachPulse 1.4s infinite ease-in-out both;
-}
-.coach-loading-dot:nth-child(1) { animation-delay: -0.32s; }
-.coach-loading-dot:nth-child(2) { animation-delay: -0.16s; }
-@keyframes coachPulse { 0%, 80%, 100% { transform: scale(0.4); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
-</style>
+    .area-detail-xp-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    .area-detail-xp-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+      background: var(--ink);
+    }
+
+    .area-detail-xp-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    /* ===== MONTHLY OVERVIEW ===== */
+    .monthly-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .monthly-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+      font-family: var(--font-hand);
+      font-size: 1rem;
+    }
+
+    .monthly-area-row {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 8px;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .monthly-area-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .monthly-area-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .monthly-area-name {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .monthly-area-bar {
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .monthly-area-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+      background: var(--ink);
+    }
+
+    .monthly-area-pct {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      min-width: 36px;
+      text-align: right;
+      color: var(--ink);
+    }
+
+    .monthly-radar-container {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 22px 14px;
+      margin-bottom: 18px;
+      border: 2px solid var(--border);
+    }
+
+    /* ===== TASK CARD ===== */
+    .task-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 13px 15px;
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .task-card:active {
+      transform: scale(0.98);
+    }
+
+    .task-card.completed {
+      background: linear-gradient(135deg, #4A9BE5 0%, #3088D8 30%, #2578C8 50%, #3D90DD 70%, #5AA5E8 100%);
+      border-color: #1B7CD1;
+      position: relative;
+      animation: paintIn 0.5s ease both;
+    }
+
+    .task-card.completed::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 120px;
+    }
+
+    .task-card.completed .task-title {
+      color: #F0EDE4;
+      text-decoration: line-through;
+      text-decoration-color: rgba(240, 237, 228, 0.4);
+      text-decoration-thickness: 1.5px;
+    }
+
+    .task-card.completed .task-freq {
+      background: rgba(255, 255, 255, 0.2);
+      color: #F0EDE4;
+    }
+
+    .task-card.completed .task-xp {
+      color: #F0EDE4;
+    }
+
+    .task-card.completed .task-streak {
+      color: #F0EDE4;
+    }
+
+    @keyframes paintIn {
+      0% {
+        background-size: 0% 100%;
+        opacity: 0.7;
+      }
+
+      100% {
+        background-size: 100% 100%;
+        opacity: 1;
+      }
+    }
+
+    .task-checkbox {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 2.5px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      background: var(--bg);
+    }
+
+    .task-card.completed .task-checkbox {
+      background: #F0EDE4;
+      border-color: #F0EDE4;
+      animation: checkBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .task-checkbox svg {
+      width: 13px;
+      height: 13px;
+      stroke: var(--ink);
+      stroke-width: 3;
+      fill: none;
+      opacity: 0;
+      transform: scale(0);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .task-card.completed .task-checkbox svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .task-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 3px;
+    }
+
+    .task-freq {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--ink-faint);
+      color: var(--ink);
+    }
+
+    .task-streak {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--streak-fire);
+    }
+
+    .task-xp {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--xp-gold);
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* ===== BOSS CARD ===== */
+    .boss-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 10px;
+      border: 2px solid var(--red);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .boss-label {
+      font-family: var(--font-hand);
+      font-size: 0.9rem;
+      color: var(--red);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .boss-title {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .boss-power-bar {
+      height: 6px;
+      background: var(--ink-faint);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+
+    .boss-power-fill {
+      height: 100%;
+      background: var(--red);
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+
+    .boss-power-label {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* ===== XP FLOAT ===== */
+    .xp-float {
+      position: fixed;
+      font-family: var(--font-hand);
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--xp-gold);
+      pointer-events: none;
+      z-index: 1000;
+      animation: floatUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      70% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-80px) scale(1.3);
+      }
+    }
+
+    @keyframes checkBounce {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.2);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* ===== LEVEL UP OVERLAY ===== */
+    .level-up-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(240, 237, 228, 0.96);
+      backdrop-filter: blur(8px);
+      animation: overlayIn 0.5s ease;
+      cursor: pointer;
+    }
+
+    @keyframes overlayIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .level-up-badge {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      background: var(--ink-faint);
+      border: 3px solid var(--ink);
+      animation: badgePop 0.6s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .level-up-badge .icon-svg {
+      width: 50px;
+      height: 50px;
+    }
+
+    @keyframes badgePop {
+      0% {
+        transform: scale(0) rotate(-20deg);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+      }
+    }
+
+    .level-up-text {
+      font-family: var(--font-hand);
+      font-size: 1.2rem;
+      color: var(--ink);
+      font-weight: 700;
+      margin-bottom: 6px;
+      animation: textIn 0.4s 0.4s ease both;
+    }
+
+    .level-up-level {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 700;
+      animation: textIn 0.4s 0.5s ease both;
+    }
+
+    .level-up-area {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      animation: textIn 0.4s 0.6s ease both;
+    }
+
+    .level-up-dismiss {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 30px;
+      animation: textIn 0.4s 0.8s ease both;
+    }
+
+    @keyframes textIn {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--bg-card);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius);
+      padding: 10px 18px;
+      font-family: var(--font-hand);
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--ink);
+      z-index: 1500;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+      animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, toastOut 0.3s 2.5s ease forwards;
+    }
+
+    @keyframes toastIn {
+      0% {
+        transform: translateX(-50%) translateY(-100px);
+      }
+
+      100% {
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @keyframes toastOut {
+      0% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateX(-50%) translateY(-100px);
+        opacity: 0;
+      }
+    }
+
+    /* ===== BOTTOM NAV ===== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-top: 2px solid var(--border);
+      display: flex;
+      justify-content: center;
+      padding: 6px 0;
+      padding-bottom: max(6px, env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+
+    .nav-item {
+      flex: 1;
+      max-width: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 7px 0;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      font-family: var(--font-body);
+    }
+
+    .nav-item.active {
+      color: var(--ink);
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .nav-item.active svg {
+      stroke-width: 2.8;
+    }
+
+    .nav-label {
+      font-size: 0.62rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== STATS ===== */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 7px;
+      border: 2px solid var(--border);
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      margin-top: 10px;
+    }
+
+    .heatmap-cell {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      background: var(--border);
+    }
+
+    .heatmap-cell.l1 {
+      background: #C2DBF0;
+    }
+
+    .heatmap-cell.l2 {
+      background: #7AB5E3;
+    }
+
+    .heatmap-cell.l3 {
+      background: #3D94D6;
+    }
+
+    .heatmap-cell.l4 {
+      background: var(--ink);
+    }
+
+    .streak-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 7px;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .streak-fire-icon {
+      font-size: 1.2rem;
+      animation: firePulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes firePulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.12);
+      }
+    }
+
+    .streak-info {
+      flex: 1;
+    }
+
+    .streak-task-name {
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+
+    .streak-count {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--red);
+    }
+
+    .streak-mult {
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: var(--ink-faint);
+      color: var(--ink);
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    /* ===== DESKTOP LAYOUT ===== */
+    .app-desktop {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .app {
+        display: none;
+      }
+
+      .bottom-nav {
+        display: none;
+      }
+
+      .app-desktop {
+        display: block;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px 32px 40px;
+      }
+
+      .desktop-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .desktop-header .header-title {
+        font-size: 1.8rem;
+      }
+
+      .desktop-xp-section {
+        margin-bottom: 28px;
+      }
+
+      .desktop-xp-section .xp-bar-container {
+        margin: 12px 0 0;
+      }
+
+      .desktop-xp-section .xp-label {
+        margin: 6px 0 0;
+      }
+
+      .desktop-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .desktop-col {
+        min-width: 0;
+      }
+
+      .desktop-col-title {
+        font-family: var(--font-hand);
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 14px;
+        color: var(--ink);
+      }
+
+      .desktop-area-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+        margin-bottom: 18px;
+      }
+
+      .desktop-area-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-sm);
+        padding: 13px;
+        border: 2px solid var(--border);
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .desktop-area-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--ink);
+      }
+
+      .desktop-area-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(27, 124, 209, 0.1);
+      }
+
+      .desktop-area-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 5px;
+      }
+
+      .desktop-area-card-icon {
+        width: 22px;
+        height: 22px;
+      }
+
+      .desktop-area-card-lv {
+        font-family: var(--font-display);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: white;
+        background: var(--ink);
+        padding: 2px 7px;
+        border-radius: 7px;
+      }
+
+      .desktop-area-card-name {
+        font-family: var(--font-display);
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .desktop-area-card-bar {
+        height: 4px;
+        background: var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .desktop-area-card-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: var(--ink);
+      }
+
+      .desktop-area-card-meta {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        margin-top: 5px;
+      }
+
+      .desktop-radar {
+        background: var(--bg-card);
+        border-radius: var(--radius);
+        padding: 18px 14px;
+        margin-bottom: 18px;
+        border: 2px solid var(--border);
+      }
+
+      .desktop-tasks-scroll {
+        max-height: calc(100vh - 180px);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+        padding-right: 4px;
+      }
+
+      .desktop-tasks-scroll::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      .desktop-tasks-scroll::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+
+      .desktop-stats-card {
+        background: var(--bg-card);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 14px;
+        border: 2px solid var(--border);
+      }
+
+      .desktop-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        margin-bottom: 14px;
+      }
+
+      .desktop-stat-item {
+        text-align: center;
+        padding: 10px 6px;
+        background: var(--bg);
+        border-radius: var(--radius-sm);
+      }
+
+      .desktop-stat-value {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.2rem;
+        display: block;
+      }
+
+      .desktop-stat-label {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .desktop-area-detail {
+        display: none;
+      }
+
+      .desktop-area-detail.active {
+        display: block;
+      }
+
+      .desktop-checkin {
+        display: block;
+      }
+
+      .desktop-checkin.hidden {
+        display: none;
+      }
+    }
+
+    @media (min-width: 1100px) {
+      .desktop-grid {
+        gap: 32px;
+      }
+    }
+
+    /* ===== CHECK-IN SUB-TABS ===== */
+    .checkin-tab {
+      flex: 1;
+      padding: 10px 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      position: relative;
+      transition: color 0.2s;
+      font-family: var(--font-body);
+    }
+
+    .checkin-tab.active {
+      color: var(--ink);
+    }
+
+    .checkin-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: var(--ink);
+      border-radius: 2px;
+    }
+
+    /* ===== SETTINGS FULL SCREEN ===== */
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: var(--bg);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      animation: overlayIn 0.3s ease;
+    }
+
+    .settings-inner {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 20px 20px 40px;
+    }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .settings-title {
+      font-family: var(--font-hand);
+      font-size: 1.6rem;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .settings-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .settings-close:active {
+      transform: scale(0.93);
+    }
+
+    .settings-close svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-muted);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+
+    .settings-section {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .settings-section-title {
+      font-family: var(--font-hand);
+      font-size: 1.15rem;
+      color: var(--ink);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .settings-label {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .settings-input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .settings-input:focus {
+      border-color: var(--ink);
+    }
+
+    .settings-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .settings-input-sm {
+      padding: 7px 10px;
+      font-size: 0.78rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      width: 100%;
+    }
+
+    .settings-input-sm:focus {
+      border-color: var(--ink);
+    }
+
+    .settings-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    .settings-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .settings-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border);
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--bg-card);
+      color: var(--text);
+    }
+
+    .settings-btn.primary {
+      background: var(--ink);
+      color: white;
+      border-color: var(--ink);
+    }
+
+    .settings-btn.primary:active {
+      transform: scale(0.97);
+    }
+
+    .settings-btn.danger {
+      color: var(--red);
+      border-color: var(--red);
+    }
+
+    .settings-status {
+      font-size: 0.72rem;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .settings-status.ok {
+      color: var(--success);
+    }
+
+    .settings-status.err {
+      color: var(--red);
+    }
+
+    /* Area accordion in settings */
+    .settings-area-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .settings-area-row:last-child {
+      border-bottom: none;
+    }
+
+    .settings-area-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .settings-area-name {
+      font-family: var(--font-display);
+      font-size: 0.82rem;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .settings-area-chevron {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-muted);
+      fill: none;
+      stroke-width: 2.5;
+      transition: transform 0.2s;
+    }
+
+    .settings-area-chevron.open {
+      transform: rotate(90deg);
+    }
+
+    .settings-area-tasks {
+      display: none;
+      padding: 10px 0 6px 32px;
+    }
+
+    .settings-area-tasks.open {
+      display: block;
+    }
+
+    .settings-task-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .settings-task-row input {
+      flex: 1;
+    }
+
+    .settings-task-freq {
+      width: 90px;
+      padding: 7px 6px;
+      font-size: 0.72rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    .settings-task-xp {
+      width: 50px;
+      padding: 7px 6px;
+      font-size: 0.72rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      text-align: center;
+    }
+
+    /* Settings gear button */
+    .settings-gear {
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+      margin-right: 10px;
+    }
+
+    .settings-gear:hover,
+    .settings-gear:active {
+      opacity: 1;
+    }
+
+    .settings-gear svg {
+      width: 100%;
+      height: 100%;
+      stroke: var(--text-muted);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ===== COACH SIDE PANEL ===== */
+    .coach-panel-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1500;
+      background: rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .coach-panel-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .coach-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1501;
+      width: 380px;
+      max-width: 90vw;
+      background: var(--bg);
+      border-left: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .coach-panel.open {
+      transform: translateX(0);
+    }
+
+    .coach-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 2px solid var(--border);
+      background: var(--bg-card);
+      flex-shrink: 0;
+    }
+
+    .coach-panel-title {
+      font-family: var(--font-hand);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .coach-panel-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .coach-panel-close:active {
+      transform: scale(0.93);
+    }
+
+    .coach-panel-close svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--text-muted);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+
+    .coach-panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .coach-panel-body::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .coach-panel-body::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    .coach-panel-input {
+      padding: 12px 18px;
+      border-top: 2px solid var(--border);
+      background: var(--bg-card);
+      flex-shrink: 0;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .coach-panel-input input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    .coach-panel-input input:focus {
+      border-color: var(--ink);
+    }
+
+    .coach-panel-input input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .coach-send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      background: var(--ink);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.15s;
+    }
+
+    .coach-send-btn:active {
+      transform: scale(0.93);
+    }
+
+    .coach-send-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* FAB (floating action button) */
+    .coach-fab {
+      position: fixed;
+      bottom: 90px;
+      right: 18px;
+      z-index: 100;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--ink);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px var(--ink-shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .coach-fab:active {
+      transform: scale(0.93);
+    }
+
+    .coach-fab:hover {
+      box-shadow: 0 6px 24px var(--ink-shadow);
+    }
+
+    .coach-fab svg {
+      width: 24px;
+      height: 24px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @media (min-width: 768px) {
+      .coach-fab {
+        bottom: 24px;
+        right: 24px;
+      }
+    }
+
+    /* Chat bubbles */
+    .coach-chat {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .coach-bubble {
+      max-width: 90%;
+      padding: 12px 15px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text);
+      animation: bubbleIn 0.3s ease both;
+    }
+
+    .coach-bubble.coach-msg {
+      align-self: flex-start;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 2px var(--radius) var(--radius) var(--radius);
+    }
+
+    .coach-bubble.coach-msg:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .coach-bubble.coach-msg:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .coach-bubble.user-msg {
+      align-self: flex-end;
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius) 2px var(--radius) var(--radius);
+    }
+
+    @keyframes bubbleIn {
+      0% {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .coach-empty {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--text-muted);
+    }
+
+    .coach-empty-icon {
+      margin-bottom: 14px;
+    }
+
+    .coach-empty-title {
+      font-family: var(--font-hand);
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .coach-empty-desc {
+      font-size: 0.82rem;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    .coach-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 12px;
+      background: var(--ink);
+      border: none;
+      border-radius: var(--radius);
+      font-family: var(--font-hand);
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .coach-btn:active {
+      transform: scale(0.97);
+    }
+
+    .coach-new-btn {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      font-family: var(--font-body);
+      text-decoration: underline;
+    }
+
+    .coach-new-btn:hover {
+      color: var(--ink);
+    }
+
+    /* Loading dots */
+    .coach-loading {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 4px 0;
+    }
+
+    .coach-loading-dots {
+      display: flex;
+      gap: 5px;
+      padding: 12px 18px;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 2px var(--radius) var(--radius) var(--radius);
+    }
+
+    .coach-loading-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--ink);
+      animation: coachPulse 1.4s infinite ease-in-out both;
+    }
+
+    .coach-loading-dot:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+
+    .coach-loading-dot:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+
+    @keyframes coachPulse {
+
+      0%,
+      80%,
+      100% {
+        transform: scale(0.4);
+        opacity: 0.4;
+      }
+
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="app">
-  <div class="header">
-    <div class="header-title"><svg class="cube-logo" viewBox="0 0 32 32" width="28" height="28" style="vertical-align:middle;margin-right:6px"><g stroke="var(--ink)" stroke-width="1.8" fill="none" stroke-linejoin="round"><path d="M16 4L4 10v12l12 6 12-6V10z"/><path d="M4 10l12 6 12-6"/><path d="M16 16v12"/><path d="M10 7l12 6"/><path d="M22 7L10 13"/><path d="M4 16l12 6"/><path d="M28 16l-12 6"/><path d="M10 13v6"/><path d="M22 13v6"/></g></svg>Harada Quest</div>
-    <div style="display:flex;align-items:center;gap:4px;">
-      <div class="settings-gear" onclick="showSettings()"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
-      <div class="header-level" id="globalLevel">LV 1</div>
+  <div class="app">
+    <div class="header">
+      <div class="header-title"><svg class="cube-logo" viewBox="0 0 32 32" width="28" height="28"
+          style="vertical-align:middle;margin-right:6px">
+          <g stroke="var(--ink)" stroke-width="1.8" fill="none" stroke-linejoin="round">
+            <path d="M16 4L4 10v12l12 6 12-6V10z" />
+            <path d="M4 10l12 6 12-6" />
+            <path d="M16 16v12" />
+            <path d="M10 7l12 6" />
+            <path d="M22 7L10 13" />
+            <path d="M4 16l12 6" />
+            <path d="M28 16l-12 6" />
+            <path d="M10 13v6" />
+            <path d="M22 13v6" />
+          </g>
+        </svg>Harada Quest</div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <div class="settings-gear" onclick="showSettings()"><svg viewBox="0 0 24 24">
+            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+            <path
+              d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+          </svg></div>
+        <div class="header-level" id="globalLevel">LV 1</div>
+      </div>
     </div>
-  </div>
-  <div style="padding:4px 20px 0;font-family:var(--font-hand);font-size:0.88rem;color:var(--text-secondary);font-weight:600;" id="mainGoal"></div>
-  <div class="xp-bar-container"><div class="xp-bar-fill" id="globalXpBar" style="width:0%"></div></div>
-  <div class="xp-label"><span id="xpCurrent">0 XP</span><span id="xpNext">100 XP to Lv 2</span></div>
-
-  <div class="view active" id="view-dashboard">
-    <div class="section-title">Your Areas</div>
-    <div class="carousel-wrapper">
-      <div class="carousel" id="areaCarousel"></div>
-      <div class="carousel-dots" id="carouselDots"></div>
+    <div
+      style="padding:4px 20px 0;font-family:var(--font-hand);font-size:0.88rem;color:var(--text-secondary);font-weight:600;"
+      id="mainGoal"></div>
+    <div class="xp-bar-container">
+      <div class="xp-bar-fill" id="globalXpBar" style="width:0%"></div>
     </div>
-    <button class="monthly-btn" onclick="showMonthly()">
-      <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-      Monthly Progress
-    </button>
-    <div class="section-title">Boss Battles</div>
-    <div id="bossList"></div>
-  </div>
+    <div class="xp-label"><span id="xpCurrent">0 XP</span><span id="xpNext">100 XP to Lv 2</span></div>
 
-  <div class="view" id="view-area-detail"></div>
-  <div class="view" id="view-monthly"></div>
-
-  <div class="view" id="view-checkin">
-    <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid var(--border)">
-      <button class="checkin-tab active" data-checkin-tab="daily" onclick="switchCheckinTab('daily')">
-        <span style="font-family:var(--font-hand);font-size:1.1rem;font-weight:700">Daily Tasks</span>
+    <div class="view active" id="view-dashboard">
+      <div class="section-title">Your Areas</div>
+      <div class="carousel-wrapper">
+        <div class="carousel" id="areaCarousel"></div>
+        <div class="carousel-dots" id="carouselDots"></div>
+      </div>
+      <button class="monthly-btn" onclick="showMonthly()">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        Monthly Progress
       </button>
-      <button class="checkin-tab" data-checkin-tab="pending" onclick="switchCheckinTab('pending')">
-        <span style="font-family:var(--font-hand);font-size:1.1rem;font-weight:700">Pending Tasks</span>
-      </button>
-    </div>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:14px;" id="checkinDate"></p>
-    <div id="questList"></div>
-  </div>
-
-  <div class="view" id="view-stats">
-    <h2 style="font-family:var(--font-hand);font-size:1.6rem;margin-bottom:18px;color:var(--ink)">Stats</h2>
-    <div id="statsContent"></div>
-  </div>
-
-
-</div>
-
-<!-- DESKTOP LAYOUT -->
-<div class="app-desktop">
-  <div class="desktop-header">
-    <div class="header-title"><svg class="cube-logo" viewBox="0 0 32 32" width="28" height="28" style="vertical-align:middle;margin-right:6px"><g stroke="var(--ink)" stroke-width="1.8" fill="none" stroke-linejoin="round"><path d="M16 4L4 10v12l12 6 12-6V10z"/><path d="M4 10l12 6 12-6"/><path d="M16 16v12"/><path d="M10 7l12 6"/><path d="M22 7L10 13"/><path d="M4 16l12 6"/><path d="M28 16l-12 6"/><path d="M10 13v6"/><path d="M22 13v6"/></g></svg>Harada Quest</div>
-    <div style="display:flex;align-items:center;gap:4px;">
-      <div class="settings-gear" onclick="showSettings()"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
-      <div class="header-level" id="globalLevelD">LV 1</div>
-    </div>
-  </div>
-  <div class="desktop-xp-section">
-    <div style="font-family:var(--font-hand);font-size:0.95rem;color:var(--text-secondary);font-weight:600;margin-bottom:4px;" id="mainGoalD"></div>
-    <div class="xp-bar-container"><div class="xp-bar-fill" id="globalXpBarD" style="width:0%"></div></div>
-    <div class="xp-label"><span id="xpCurrentD">0 XP</span><span id="xpNextD">100 XP to Lv 2</span></div>
-  </div>
-  <div class="desktop-grid">
-    <div class="desktop-col">
-      <div class="desktop-col-title">Balance</div>
-      <div class="desktop-radar"><canvas id="desktopRadar" height="260"></canvas></div>
-      <div class="desktop-col-title">Your Areas</div>
-      <div class="desktop-area-grid" id="desktopAreaGrid"></div>
       <div class="section-title">Boss Battles</div>
-      <div id="desktopBossList"></div>
+      <div id="bossList"></div>
     </div>
-    <div class="desktop-col">
-      <div class="desktop-checkin" id="desktopCheckin">
-        <div class="desktop-col-title">Today's Quests</div>
-        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;" id="desktopCheckinDate"></p>
-        <div class="desktop-tasks-scroll" id="desktopQuestList"></div>
+
+    <div class="view" id="view-area-detail"></div>
+    <div class="view" id="view-monthly"></div>
+
+    <div class="view" id="view-checkin">
+      <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:2px solid var(--border)">
+        <button class="checkin-tab active" data-checkin-tab="daily" onclick="switchCheckinTab('daily')">
+          <span style="font-family:var(--font-hand);font-size:1.1rem;font-weight:700">Daily Tasks</span>
+        </button>
+        <button class="checkin-tab" data-checkin-tab="pending" onclick="switchCheckinTab('pending')">
+          <span style="font-family:var(--font-hand);font-size:1.1rem;font-weight:700">Pending Tasks</span>
+        </button>
       </div>
-      <div class="desktop-area-detail" id="desktopAreaDetail"></div>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:14px;" id="checkinDate"></p>
+      <div id="questList"></div>
     </div>
-    <div class="desktop-col">
-      <div class="desktop-col-title">Stats</div>
-      <div class="desktop-stats-card">
-        <div class="desktop-stats-grid" id="desktopStatsGrid"></div>
-        <div class="section-title" style="font-size:1rem">Last 28 Days</div>
-        <div class="heatmap" id="desktopHeatmap"></div>
+
+    <div class="view" id="view-stats">
+      <h2 style="font-family:var(--font-hand);font-size:1.6rem;margin-bottom:18px;color:var(--ink)">Stats</h2>
+      <div id="statsContent"></div>
+    </div>
+
+
+  </div>
+
+  <!-- DESKTOP LAYOUT -->
+  <div class="app-desktop">
+    <div class="desktop-header">
+      <div class="header-title"><svg class="cube-logo" viewBox="0 0 32 32" width="28" height="28"
+          style="vertical-align:middle;margin-right:6px">
+          <g stroke="var(--ink)" stroke-width="1.8" fill="none" stroke-linejoin="round">
+            <path d="M16 4L4 10v12l12 6 12-6V10z" />
+            <path d="M4 10l12 6 12-6" />
+            <path d="M16 16v12" />
+            <path d="M10 7l12 6" />
+            <path d="M22 7L10 13" />
+            <path d="M4 16l12 6" />
+            <path d="M28 16l-12 6" />
+            <path d="M10 13v6" />
+            <path d="M22 13v6" />
+          </g>
+        </svg>Harada Quest</div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <div class="settings-gear" onclick="showSettings()"><svg viewBox="0 0 24 24">
+            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+            <path
+              d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+          </svg></div>
+        <div class="header-level" id="globalLevelD">LV 1</div>
       </div>
-      <div class="desktop-col-title" style="margin-top:8px;">Active Streaks</div>
-      <div id="desktopStreaks"></div>
-      <div class="desktop-col-title" style="margin-top:14px;">Monthly Progress</div>
-      <div id="desktopMonthlyBars"></div>
+    </div>
+    <div class="desktop-xp-section">
+      <div
+        style="font-family:var(--font-hand);font-size:0.95rem;color:var(--text-secondary);font-weight:600;margin-bottom:4px;"
+        id="mainGoalD"></div>
+      <div class="xp-bar-container">
+        <div class="xp-bar-fill" id="globalXpBarD" style="width:0%"></div>
+      </div>
+      <div class="xp-label"><span id="xpCurrentD">0 XP</span><span id="xpNextD">100 XP to Lv 2</span></div>
+    </div>
+    <div class="desktop-grid">
+      <div class="desktop-col">
+        <div class="desktop-col-title">Balance</div>
+        <div class="desktop-radar"><canvas id="desktopRadar" height="260"></canvas></div>
+        <div class="desktop-col-title">Your Areas</div>
+        <div class="desktop-area-grid" id="desktopAreaGrid"></div>
+        <div class="section-title">Boss Battles</div>
+        <div id="desktopBossList"></div>
+      </div>
+      <div class="desktop-col">
+        <div class="desktop-checkin" id="desktopCheckin">
+          <div class="desktop-col-title">Today's Quests</div>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:14px;" id="desktopCheckinDate"></p>
+          <div class="desktop-tasks-scroll" id="desktopQuestList"></div>
+        </div>
+        <div class="desktop-area-detail" id="desktopAreaDetail"></div>
+      </div>
+      <div class="desktop-col">
+        <div class="desktop-col-title">Stats</div>
+        <div class="desktop-stats-card">
+          <div class="desktop-stats-grid" id="desktopStatsGrid"></div>
+          <div class="section-title" style="font-size:1rem">Last 28 Days</div>
+          <div class="heatmap" id="desktopHeatmap"></div>
+        </div>
+        <div class="desktop-col-title" style="margin-top:8px;">Active Streaks</div>
+        <div id="desktopStreaks"></div>
+        <div class="desktop-col-title" style="margin-top:14px;">Monthly Progress</div>
+        <div id="desktopMonthlyBars"></div>
+      </div>
     </div>
   </div>
-</div>
 
-<nav class="bottom-nav">
-  <button class="nav-item active" data-view="dashboard">
-    <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1m-2 0h2"/></svg>
-    <span class="nav-label">Home</span>
-  </button>
-  <button class="nav-item" data-view="checkin">
-    <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-    <span class="nav-label">Check-in</span>
-  </button>
-  <button class="nav-item" data-view="stats">
-    <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-    <span class="nav-label">Stats</span>
-  </button>
-
-</nav>
-
-<!-- Coach FAB -->
-<button class="coach-fab" onclick="openCoachPanel()" aria-label="Open Sensei">
-  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg>
-</button>
-
-<!-- Coach Side Panel -->
-<div class="coach-panel-backdrop" id="coachBackdrop" onclick="closeCoachPanel()"></div>
-<div class="coach-panel" id="coachPanel">
-  <div class="coach-panel-header">
-    <div class="coach-panel-title">Your Sensei</div>
-    <div style="display:flex;align-items:center;gap:6px;">
-      <button class="coach-new-btn" onclick="startNewCoachSession()">New chat</button>
-      <div class="coach-panel-close" onclick="closeCoachPanel()">
-        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </div>
-    </div>
-  </div>
-  <div class="coach-panel-body" id="coachPanelBody"></div>
-  <div class="coach-panel-input" id="coachInputBar">
-    <input placeholder="Ask your sensei..." onkeydown="handleCoachInput(event)" id="coachInput" />
-    <button class="coach-send-btn" onclick="sendFromInput()">
-      <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-view="dashboard">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1m-2 0h2" />
+      </svg>
+      <span class="nav-label">Home</span>
     </button>
+    <button class="nav-item" data-view="checkin">
+      <svg viewBox="0 0 24 24">
+        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="nav-label">Check-in</span>
+    </button>
+    <button class="nav-item" data-view="stats">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+      <span class="nav-label">Stats</span>
+    </button>
+
+  </nav>
+
+  <!-- Coach FAB -->
+  <button class="coach-fab" onclick="openCoachPanel()" aria-label="Open Sensei">
+    <svg viewBox="0 0 24 24">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+      <path d="M8 10h.01M12 10h.01M16 10h.01" />
+    </svg>
+  </button>
+
+  <!-- Coach Side Panel -->
+  <div class="coach-panel-backdrop" id="coachBackdrop" onclick="closeCoachPanel()"></div>
+  <div class="coach-panel" id="coachPanel">
+    <div class="coach-panel-header">
+      <div class="coach-panel-title">Your Sensei</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button class="coach-new-btn" onclick="startNewCoachSession()">New chat</button>
+        <div class="coach-panel-close" onclick="closeCoachPanel()">
+          <svg viewBox="0 0 24 24">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="coach-panel-body" id="coachPanelBody"></div>
+    <div class="coach-panel-input" id="coachInputBar">
+      <input placeholder="Ask your sensei..." onkeydown="handleCoachInput(event)" id="coachInput" />
+      <button class="coach-send-btn" onclick="sendFromInput()">
+        <svg viewBox="0 0 24 24">
+          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4z" />
+        </svg>
+      </button>
+    </div>
   </div>
-</div>
 
-<script>
-// ===== HAND-DRAWN SVG ICONS =====
-const ICONS = {
-  leadership: `<svg viewBox="0 0 40 40"><path d="M8 32h24M12 32V18l8-10 8 10v14" /><path d="M17 32v-8h6v8" /><circle cx="20" cy="14" r="2" /></svg>`,
-  creative: `<svg viewBox="0 0 40 40"><path d="M10 30c0-8 6-18 14-22 1 4-1 8 2 10s6-1 7 3c1 5-4 9-9 11s-11 3-14-2z" /><circle cx="16" cy="27" r="1.5" fill="currentColor"/><circle cx="22" cy="24" r="1" fill="currentColor"/><circle cx="25" cy="19" r="1.5" fill="currentColor"/></svg>`,
-  craft: `<svg viewBox="0 0 40 40"><rect x="6" y="10" width="28" height="20" rx="3" /><circle cx="20" cy="20" r="6" /><circle cx="20" cy="20" r="2" /><path d="M6 14h28" /></svg>`,
-  finance: `<svg viewBox="0 0 40 40"><rect x="8" y="14" width="24" height="16" rx="2" /><path d="M8 20h24" /><path d="M12 8h16c1 0 2 1 2 2v4H10v-4c0-1 1-2 2-2z" /><circle cx="20" cy="24" r="3" /></svg>`,
-  network: `<svg viewBox="0 0 40 40"><circle cx="20" cy="12" r="4" /><circle cx="10" cy="28" r="3" /><circle cx="30" cy="28" r="3" /><path d="M17 15l-5 10M23 15l5 10M13 28h14" /></svg>`,
-  family: `<svg viewBox="0 0 40 40"><path d="M20 10c-6 0-12 8-12 14 0 4 5 8 12 8s12-4 12-8c0-6-6-14-12-14z" /><path d="M16 22c0 2 2 4 4 4s4-2 4-4" /><circle cx="15" cy="18" r="1.5" fill="currentColor"/><circle cx="25" cy="18" r="1.5" fill="currentColor"/></svg>`,
-  body: `<svg viewBox="0 0 40 40"><circle cx="20" cy="8" r="4" /><path d="M20 14v10M14 18h12M16 34l4-10 4 10" /><path d="M12 24l4-6M28 24l-4-6" /></svg>`,
-  mind: `<svg viewBox="0 0 40 40"><path d="M20 34v-6" /><path d="M14 12c0-4 3-6 6-6s6 2 6 6c0 2-1 3-2 4" /><path d="M12 16c-2 1-3 3-3 5s2 5 5 6" /><path d="M28 16c2 1 3 3 3 5s-2 5-5 6" /><path d="M14 27c2 1 4 1 6 1s4 0 6-1" /><path d="M18 16c0 2-2 3-2 5" /><path d="M22 14c0 2 2 4 2 6" /></svg>`,
-  fire: `<svg viewBox="0 0 24 24"><path d="M12 2c0 4-4 6-4 10a6 6 0 0012 0c0-4-4-6-4-10-1 2-3 3-4 0z"/></svg>`,
-  coach: `<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg>`,
-};
+  <script>
+    // ===== HAND-DRAWN SVG ICONS =====
+    const ICONS = {
+      leadership: `<svg viewBox="0 0 40 40"><path d="M8 32h24M12 32V18l8-10 8 10v14" /><path d="M17 32v-8h6v8" /><circle cx="20" cy="14" r="2" /></svg>`,
+      creative: `<svg viewBox="0 0 40 40"><path d="M10 30c0-8 6-18 14-22 1 4-1 8 2 10s6-1 7 3c1 5-4 9-9 11s-11 3-14-2z" /><circle cx="16" cy="27" r="1.5" fill="currentColor"/><circle cx="22" cy="24" r="1" fill="currentColor"/><circle cx="25" cy="19" r="1.5" fill="currentColor"/></svg>`,
+      craft: `<svg viewBox="0 0 40 40"><rect x="6" y="10" width="28" height="20" rx="3" /><circle cx="20" cy="20" r="6" /><circle cx="20" cy="20" r="2" /><path d="M6 14h28" /></svg>`,
+      finance: `<svg viewBox="0 0 40 40"><rect x="8" y="14" width="24" height="16" rx="2" /><path d="M8 20h24" /><path d="M12 8h16c1 0 2 1 2 2v4H10v-4c0-1 1-2 2-2z" /><circle cx="20" cy="24" r="3" /></svg>`,
+      network: `<svg viewBox="0 0 40 40"><circle cx="20" cy="12" r="4" /><circle cx="10" cy="28" r="3" /><circle cx="30" cy="28" r="3" /><path d="M17 15l-5 10M23 15l5 10M13 28h14" /></svg>`,
+      family: `<svg viewBox="0 0 40 40"><path d="M20 10c-6 0-12 8-12 14 0 4 5 8 12 8s12-4 12-8c0-6-6-14-12-14z" /><path d="M16 22c0 2 2 4 4 4s4-2 4-4" /><circle cx="15" cy="18" r="1.5" fill="currentColor"/><circle cx="25" cy="18" r="1.5" fill="currentColor"/></svg>`,
+      body: `<svg viewBox="0 0 40 40"><circle cx="20" cy="8" r="4" /><path d="M20 14v10M14 18h12M16 34l4-10 4 10" /><path d="M12 24l4-6M28 24l-4-6" /></svg>`,
+      mind: `<svg viewBox="0 0 40 40"><path d="M20 34v-6" /><path d="M14 12c0-4 3-6 6-6s6 2 6 6c0 2-1 3-2 4" /><path d="M12 16c-2 1-3 3-3 5s2 5 5 6" /><path d="M28 16c2 1 3 3 3 5s-2 5-5 6" /><path d="M14 27c2 1 4 1 6 1s4 0 6-1" /><path d="M18 16c0 2-2 3-2 5" /><path d="M22 14c0 2 2 4 2 6" /></svg>`,
+      fire: `<svg viewBox="0 0 24 24"><path d="M12 2c0 4-4 6-4 10a6 6 0 0012 0c0-4-4-6-4-10-1 2-3 3-4 0z"/></svg>`,
+      coach: `<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg>`,
+    };
 
-function icon(name, size=24) {
-  return `<span class="icon-svg" style="width:${size}px;height:${size}px">${ICONS[name]||''}</span>`;
-}
+    function icon(name, size = 24) {
+      return `<span class="icon-svg" style="width:${size}px;height:${size}px">${ICONS[name] || ''}</span>`;
+    }
 
-// ===== DATA =====
-const DEFAULT_AREAS = [
-  { id:'leadership', name:'Leadership', iconKey:'leadership', color:'#2563EB' },
-  { id:'creative',   name:'Creative Voice', iconKey:'creative', color:'#9333EA' },
-  { id:'craft',      name:'Craft', iconKey:'craft', color:'#E07B2E' },
-  { id:'finance',    name:'Finance', iconKey:'finance', color:'#16A34A' },
-  { id:'network',    name:'Network', iconKey:'network', color:'#DC2626' },
-  { id:'family',     name:'Family & Friends', iconKey:'family', color:'#EC4899' },
-  { id:'body',       name:'Body', iconKey:'body', color:'#0D9488' },
-  { id:'mind',       name:'Mind', iconKey:'mind', color:'#7C3AED' },
-];
+    // ===== DATA =====
+    const DEFAULT_AREAS = [
+      { id: 'leadership', name: 'Leadership', iconKey: 'leadership', color: '#2563EB' },
+      { id: 'creative', name: 'Creative Voice', iconKey: 'creative', color: '#9333EA' },
+      { id: 'craft', name: 'Craft', iconKey: 'craft', color: '#E07B2E' },
+      { id: 'finance', name: 'Finance', iconKey: 'finance', color: '#16A34A' },
+      { id: 'network', name: 'Network', iconKey: 'network', color: '#DC2626' },
+      { id: 'family', name: 'Family & Friends', iconKey: 'family', color: '#EC4899' },
+      { id: 'body', name: 'Body', iconKey: 'body', color: '#0D9488' },
+      { id: 'mind', name: 'Mind', iconKey: 'mind', color: '#7C3AED' },
+    ];
 
-const DEFAULT_TASKS = [
-  { id:'lead-01', areaId:'leadership', title:'Practice giving better feedback & direction', frequency:'weekly', baseXP:15 },
-  { id:'lead-02', areaId:'leadership', title:'Have a 1:1 meeting with a new person', frequency:'monthly', baseXP:50, isBoss:true },
-  { id:'lead-03', areaId:'leadership', title:'2hr pause before responding to bad behavior', frequency:'daily', baseXP:5 },
-  { id:'lead-04', areaId:'leadership', title:"Deep dive on a director/leader's methods", frequency:'monthly', baseXP:50, isBoss:true },
-  { id:'lead-05', areaId:'leadership', title:"Delegate a task I'd normally do myself", frequency:'monthly', baseXP:50 },
-  { id:'lead-06', areaId:'leadership', title:'Read one leadership article', frequency:'monthly', baseXP:50 },
-  { id:'lead-07', areaId:'leadership', title:'Document my leadership style & process', frequency:'monthly', baseXP:50 },
-  { id:'lead-08', areaId:'leadership', title:'Maintain creative process playbook', frequency:'weekly', baseXP:15 },
-  { id:'crv-01', areaId:'creative', title:'Maintain visual moodboard with inspiration', frequency:'weekly', baseXP:15 },
-  { id:'crv-02', areaId:'creative', title:'Write a self-reflective free form essay', frequency:'monthly', baseXP:50, isBoss:true },
-  { id:'crv-03', areaId:'creative', title:'Learn/create on a non-film creative tech', frequency:'monthly', baseXP:50 },
-  { id:'crv-04', areaId:'creative', title:'Read article about new creative technology', frequency:'weekly', baseXP:15 },
-  { id:'crv-05', areaId:'creative', title:'Consume a new artist of any medium', frequency:'weekly', baseXP:15 },
-  { id:'crv-06', areaId:'creative', title:'Study one stand out film', frequency:'weekly', baseXP:15 },
-  { id:'crv-07', areaId:'creative', title:'Develop an original film/series concept', frequency:'weekly', baseXP:15 },
-  { id:'crv-08', areaId:'creative', title:'Storyboard one feature film', frequency:'monthly', baseXP:50, isBoss:true },
-  { id:'crf-01', areaId:'craft', title:'Shoot one video as DP', frequency:'monthly', baseXP:50, isBoss:true },
-  { id:'crf-02', areaId:'craft', title:'Edit one remote video', frequency:'quarterly', baseXP:150, isBoss:true },
-  { id:'crf-03', areaId:'craft', title:'Write one short film', frequency:'weekly', baseXP:15 },
-  { id:'crf-04', areaId:'craft', title:'Read one feature film script', frequency:'monthly', baseXP:50 },
-  { id:'crf-05', areaId:'craft', title:'Produce 1 short film', frequency:'monthly', baseXP:50, isBoss:true },
-  { id:'crf-06', areaId:'craft', title:'Study music and sound for 1 hour', frequency:'monthly', baseXP:50 },
-  { id:'crf-07', areaId:'craft', title:'Practice pitch one film concept', frequency:'monthly', baseXP:50 },
-  { id:'crf-08', areaId:'craft', title:"Write essay about a film's creative approach", frequency:'monthly', baseXP:50 },
-  { id:'fin-01', areaId:'finance', title:'Check capital / daily spend', frequency:'daily', baseXP:5 },
-  { id:'fin-02', areaId:'finance', title:'Save 30% of discretionary budget', frequency:'monthly', baseXP:50, isBoss:true },
-  { id:'fin-03', areaId:'finance', title:'Read about financial health', frequency:'monthly', baseXP:50 },
-  { id:'fin-04', areaId:'finance', title:'Audit subscriptions', frequency:'weekly', baseXP:15 },
-  { id:'fin-05', areaId:'finance', title:'Build film production fund', frequency:'monthly', baseXP:50, isBoss:true },
-  { id:'fin-06', areaId:'finance', title:'4hr wait rule before non-essential buys', frequency:'daily', baseXP:5 },
-  { id:'fin-07', areaId:'finance', title:'1hr checking finances', frequency:'monthly', baseXP:50 },
-  { id:'fin-08', areaId:'finance', title:'Be good at my job', frequency:'daily', baseXP:5 },
-  { id:'net-01', areaId:'network', title:'Reach out to one film world friend', frequency:'monthly', baseXP:50 },
-  { id:'net-02', areaId:'network', title:"Say yes to a networking event I'd skip", frequency:'quarterly', baseXP:150, isBoss:true },
-  { id:'net-03', areaId:'network', title:'Attend a creative tech conference', frequency:'quarterly', baseXP:150, isBoss:true },
-  { id:'net-04', areaId:'network', title:'Connect with a film person online', frequency:'monthly', baseXP:50 },
-  { id:'net-05', areaId:'network', title:'Attend one writing retreat', frequency:'quarterly', baseXP:150, isBoss:true },
-  { id:'net-06', areaId:'network', title:'Submit work once', frequency:'quarterly', baseXP:150, isBoss:true },
-  { id:'net-07', areaId:'network', title:'1 filmmaking event', frequency:'quarterly', baseXP:150, isBoss:true },
-  { id:'net-08', areaId:'network', title:'Add to online presence', frequency:'weekly', baseXP:15 },
-  { id:'fam-01', areaId:'family', title:'Send messages to family & friends', frequency:'weekly', baseXP:15 },
-  { id:'fam-02', areaId:'family', title:'10 min quality time with dogs', frequency:'daily', baseXP:5 },
-  { id:'fam-03', areaId:'family', title:'Consume Brazilian culture/food', frequency:'weekly', baseXP:15 },
-  { id:'fam-04', areaId:'family', title:'Clean bathrooms', frequency:'weekly', baseXP:15 },
-  { id:'fam-05', areaId:'family', title:'Board game with Meg', frequency:'weekly', baseXP:15 },
-  { id:'fam-06', areaId:'family', title:'In person social time with friends', frequency:'monthly', baseXP:50 },
-  { id:'fam-07', areaId:'family', title:'Visit Brazil', frequency:'quarterly', baseXP:150, isBoss:true },
-  { id:'fam-08', areaId:'family', title:'Create and check birthday calendar', frequency:'monthly', baseXP:50 },
-  { id:'bod-01', areaId:'body', title:'Daily skin routine', frequency:'daily', baseXP:5 },
-  { id:'bod-02', areaId:'body', title:'Strengthen exercise 2x', frequency:'weekly', baseXP:15 },
-  { id:'bod-03', areaId:'body', title:'Cook 3 meals', frequency:'weekly', baseXP:15 },
-  { id:'bod-04', areaId:'body', title:'Sheets weekly in zones 1-3', frequency:'weekly', baseXP:15 },
-  { id:'bod-05', areaId:'body', title:'Drink 2L of water', frequency:'daily', baseXP:5 },
-  { id:'bod-06', areaId:'body', title:'Stand up and stretch every 2hrs', frequency:'daily', baseXP:5 },
-  { id:'bod-07', areaId:'body', title:'Massage chair session', frequency:'weekly', baseXP:15 },
-  { id:'mnd-01', areaId:'mind', title:'10 min breath work', frequency:'daily', baseXP:5 },
-  { id:'mnd-02', areaId:'mind', title:'20 min leisure reading', frequency:'daily', baseXP:5 },
-  { id:'mnd-03', areaId:'mind', title:'No phone first hour of the day', frequency:'daily', baseXP:5 },
-  { id:'mnd-04', areaId:'mind', title:'30 min weekly yoga', frequency:'weekly', baseXP:15 },
-  { id:'mnd-05', areaId:'mind', title:'30 min weekly reflection', frequency:'weekly', baseXP:15 },
-  { id:'mnd-06', areaId:'mind', title:'Clean office', frequency:'weekly', baseXP:15 },
-  { id:'mnd-07', areaId:'mind', title:'Get out of the house', frequency:'weekly', baseXP:15 },
-  { id:'mnd-08', areaId:'mind', title:'Take one class', frequency:'weekly', baseXP:15 },
-  { id:'mnd-09', areaId:'mind', title:'5hr phone free block', frequency:'weekly', baseXP:15 },
-];
+    const DEFAULT_TASKS = [
+      { id: 'lead-01', areaId: 'leadership', title: 'Practice giving better feedback & direction', frequency: 'weekly', baseXP: 15 },
+      { id: 'lead-02', areaId: 'leadership', title: 'Have a 1:1 meeting with a new person', frequency: 'monthly', baseXP: 50, isBoss: true },
+      { id: 'lead-03', areaId: 'leadership', title: '2hr pause before responding to bad behavior', frequency: 'daily', baseXP: 5 },
+      { id: 'lead-04', areaId: 'leadership', title: "Deep dive on a director/leader's methods", frequency: 'monthly', baseXP: 50, isBoss: true },
+      { id: 'lead-05', areaId: 'leadership', title: "Delegate a task I'd normally do myself", frequency: 'monthly', baseXP: 50 },
+      { id: 'lead-06', areaId: 'leadership', title: 'Read one leadership article', frequency: 'monthly', baseXP: 50 },
+      { id: 'lead-07', areaId: 'leadership', title: 'Document my leadership style & process', frequency: 'monthly', baseXP: 50 },
+      { id: 'lead-08', areaId: 'leadership', title: 'Maintain creative process playbook', frequency: 'weekly', baseXP: 15 },
+      { id: 'crv-01', areaId: 'creative', title: 'Maintain visual moodboard with inspiration', frequency: 'weekly', baseXP: 15 },
+      { id: 'crv-02', areaId: 'creative', title: 'Write a self-reflective free form essay', frequency: 'monthly', baseXP: 50, isBoss: true },
+      { id: 'crv-03', areaId: 'creative', title: 'Learn/create on a non-film creative tech', frequency: 'monthly', baseXP: 50 },
+      { id: 'crv-04', areaId: 'creative', title: 'Read article about new creative technology', frequency: 'weekly', baseXP: 15 },
+      { id: 'crv-05', areaId: 'creative', title: 'Consume a new artist of any medium', frequency: 'weekly', baseXP: 15 },
+      { id: 'crv-06', areaId: 'creative', title: 'Study one stand out film', frequency: 'weekly', baseXP: 15 },
+      { id: 'crv-07', areaId: 'creative', title: 'Develop an original film/series concept', frequency: 'weekly', baseXP: 15 },
+      { id: 'crv-08', areaId: 'creative', title: 'Storyboard one feature film', frequency: 'monthly', baseXP: 50, isBoss: true },
+      { id: 'crf-01', areaId: 'craft', title: 'Shoot one video as DP', frequency: 'monthly', baseXP: 50, isBoss: true },
+      { id: 'crf-02', areaId: 'craft', title: 'Edit one remote video', frequency: 'quarterly', baseXP: 150, isBoss: true },
+      { id: 'crf-03', areaId: 'craft', title: 'Write one short film', frequency: 'weekly', baseXP: 15 },
+      { id: 'crf-04', areaId: 'craft', title: 'Read one feature film script', frequency: 'monthly', baseXP: 50 },
+      { id: 'crf-05', areaId: 'craft', title: 'Produce 1 short film', frequency: 'monthly', baseXP: 50, isBoss: true },
+      { id: 'crf-06', areaId: 'craft', title: 'Study music and sound for 1 hour', frequency: 'monthly', baseXP: 50 },
+      { id: 'crf-07', areaId: 'craft', title: 'Practice pitch one film concept', frequency: 'monthly', baseXP: 50 },
+      { id: 'crf-08', areaId: 'craft', title: "Write essay about a film's creative approach", frequency: 'monthly', baseXP: 50 },
+      { id: 'fin-01', areaId: 'finance', title: 'Check capital / daily spend', frequency: 'daily', baseXP: 5 },
+      { id: 'fin-02', areaId: 'finance', title: 'Save 30% of discretionary budget', frequency: 'monthly', baseXP: 50, isBoss: true },
+      { id: 'fin-03', areaId: 'finance', title: 'Read about financial health', frequency: 'monthly', baseXP: 50 },
+      { id: 'fin-04', areaId: 'finance', title: 'Audit subscriptions', frequency: 'weekly', baseXP: 15 },
+      { id: 'fin-05', areaId: 'finance', title: 'Build film production fund', frequency: 'monthly', baseXP: 50, isBoss: true },
+      { id: 'fin-06', areaId: 'finance', title: '4hr wait rule before non-essential buys', frequency: 'daily', baseXP: 5 },
+      { id: 'fin-07', areaId: 'finance', title: '1hr checking finances', frequency: 'monthly', baseXP: 50 },
+      { id: 'fin-08', areaId: 'finance', title: 'Be good at my job', frequency: 'daily', baseXP: 5 },
+      { id: 'net-01', areaId: 'network', title: 'Reach out to one film world friend', frequency: 'monthly', baseXP: 50 },
+      { id: 'net-02', areaId: 'network', title: "Say yes to a networking event I'd skip", frequency: 'quarterly', baseXP: 150, isBoss: true },
+      { id: 'net-03', areaId: 'network', title: 'Attend a creative tech conference', frequency: 'quarterly', baseXP: 150, isBoss: true },
+      { id: 'net-04', areaId: 'network', title: 'Connect with a film person online', frequency: 'monthly', baseXP: 50 },
+      { id: 'net-05', areaId: 'network', title: 'Attend one writing retreat', frequency: 'quarterly', baseXP: 150, isBoss: true },
+      { id: 'net-06', areaId: 'network', title: 'Submit work once', frequency: 'quarterly', baseXP: 150, isBoss: true },
+      { id: 'net-07', areaId: 'network', title: '1 filmmaking event', frequency: 'quarterly', baseXP: 150, isBoss: true },
+      { id: 'net-08', areaId: 'network', title: 'Add to online presence', frequency: 'weekly', baseXP: 15 },
+      { id: 'fam-01', areaId: 'family', title: 'Send messages to family & friends', frequency: 'weekly', baseXP: 15 },
+      { id: 'fam-02', areaId: 'family', title: '10 min quality time with dogs', frequency: 'daily', baseXP: 5 },
+      { id: 'fam-03', areaId: 'family', title: 'Consume Brazilian culture/food', frequency: 'weekly', baseXP: 15 },
+      { id: 'fam-04', areaId: 'family', title: 'Clean bathrooms', frequency: 'weekly', baseXP: 15 },
+      { id: 'fam-05', areaId: 'family', title: 'Board game with Meg', frequency: 'weekly', baseXP: 15 },
+      { id: 'fam-06', areaId: 'family', title: 'In person social time with friends', frequency: 'monthly', baseXP: 50 },
+      { id: 'fam-07', areaId: 'family', title: 'Visit Brazil', frequency: 'quarterly', baseXP: 150, isBoss: true },
+      { id: 'fam-08', areaId: 'family', title: 'Create and check birthday calendar', frequency: 'monthly', baseXP: 50 },
+      { id: 'bod-01', areaId: 'body', title: 'Daily skin routine', frequency: 'daily', baseXP: 5 },
+      { id: 'bod-02', areaId: 'body', title: 'Strengthen exercise 2x', frequency: 'weekly', baseXP: 15 },
+      { id: 'bod-03', areaId: 'body', title: 'Cook 3 meals', frequency: 'weekly', baseXP: 15 },
+      { id: 'bod-04', areaId: 'body', title: 'Sheets weekly in zones 1-3', frequency: 'weekly', baseXP: 15 },
+      { id: 'bod-05', areaId: 'body', title: 'Drink 2L of water', frequency: 'daily', baseXP: 5 },
+      { id: 'bod-06', areaId: 'body', title: 'Stand up and stretch every 2hrs', frequency: 'daily', baseXP: 5 },
+      { id: 'bod-07', areaId: 'body', title: 'Massage chair session', frequency: 'weekly', baseXP: 15 },
+      { id: 'mnd-01', areaId: 'mind', title: '10 min breath work', frequency: 'daily', baseXP: 5 },
+      { id: 'mnd-02', areaId: 'mind', title: '20 min leisure reading', frequency: 'daily', baseXP: 5 },
+      { id: 'mnd-03', areaId: 'mind', title: 'No phone first hour of the day', frequency: 'daily', baseXP: 5 },
+      { id: 'mnd-04', areaId: 'mind', title: '30 min weekly yoga', frequency: 'weekly', baseXP: 15 },
+      { id: 'mnd-05', areaId: 'mind', title: '30 min weekly reflection', frequency: 'weekly', baseXP: 15 },
+      { id: 'mnd-06', areaId: 'mind', title: 'Clean office', frequency: 'weekly', baseXP: 15 },
+      { id: 'mnd-07', areaId: 'mind', title: 'Get out of the house', frequency: 'weekly', baseXP: 15 },
+      { id: 'mnd-08', areaId: 'mind', title: 'Take one class', frequency: 'weekly', baseXP: 15 },
+      { id: 'mnd-09', areaId: 'mind', title: '5hr phone free block', frequency: 'weekly', baseXP: 15 },
+    ];
 
-// Load customized areas/tasks from localStorage or use defaults
-let AREAS = (() => { try { const s = localStorage.getItem('harada-quest-areas'); return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_AREAS)); } catch(e) { return JSON.parse(JSON.stringify(DEFAULT_AREAS)); } })();
-let TASKS = (() => { try { const s = localStorage.getItem('harada-quest-tasks'); return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_TASKS)); } catch(e) { return JSON.parse(JSON.stringify(DEFAULT_TASKS)); } })();
+    // Load customized areas/tasks from localStorage or use defaults
+    let AREAS = (() => { try { const s = localStorage.getItem('harada-quest-areas'); return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_AREAS)); } catch (e) { return JSON.parse(JSON.stringify(DEFAULT_AREAS)); } })();
+    let TASKS = (() => { try { const s = localStorage.getItem('harada-quest-tasks'); return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_TASKS)); } catch (e) { return JSON.parse(JSON.stringify(DEFAULT_TASKS)); } })();
 
-// ===== STATE =====
-const STATE_KEY = 'harada-quest-state';
-function getDefaultState() { return { totalXP:0, areaXP:Object.fromEntries(AREAS.map(a=>[a.id,0])), completions:{}, streaks:{}, bossesDefeated:[], mainGoal:'Develop my Filmmaking Career' }; }
-let state = loadState();
-function loadState() { try { const s=localStorage.getItem(STATE_KEY); if(s) return {...getDefaultState(),...JSON.parse(s)}; } catch(e){} return getDefaultState(); }
-function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+    // ===== STATE =====
+    const STATE_KEY = 'harada-quest-state';
+    function getDefaultState() { return { totalXP: 0, areaXP: Object.fromEntries(AREAS.map(a => [a.id, 0])), completions: {}, streaks: {}, bossesDefeated: [], mainGoal: 'Develop my Filmmaking Career' }; }
+    let state = loadState();
+    function loadState() { try { const s = localStorage.getItem(STATE_KEY); if (s) return { ...getDefaultState(), ...JSON.parse(s) }; } catch (e) { } return getDefaultState(); }
+    function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
 
-// ===== DATE UTILS =====
-function getPeriodKey(freq,d=new Date()) {
-  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
-  if(freq==='daily') return `${y}-${m}-${day}`;
-  if(freq==='weekly') { const j=new Date(y,0,1); const days=Math.floor((d-j)/864e5); return `${y}-W${String(Math.ceil((days+j.getDay()+1)/7)).padStart(2,'0')}`; }
-  if(freq==='monthly') return `${y}-${m}`;
-  if(freq==='quarterly') return `${y}-Q${Math.ceil((d.getMonth()+1)/3)}`;
-  return `${y}-${m}-${day}`;
-}
-function getPrevPeriod(freq,key) {
-  if(freq==='daily') { const d=new Date(key);d.setDate(d.getDate()-1); return getPeriodKey('daily',d); }
-  if(freq==='weekly') { const [y,w]=key.split('-W').map(Number); return w<=1?`${y-1}-W52`:`${y}-W${String(w-1).padStart(2,'0')}`; }
-  if(freq==='monthly') { const [y,m]=key.split('-').map(Number); return m<=1?`${y-1}-12`:`${y}-${String(m-1).padStart(2,'0')}`; }
-  if(freq==='quarterly') { const [y,q]=key.replace('Q','').split('-').map(Number); return q<=1?`${y-1}-Q4`:`${y}-Q${q-1}`; }
-}
-function isCompleted(taskId,freq) { return !!state.completions[`${taskId}:${getPeriodKey(freq)}`]; }
+    // ===== DATE UTILS =====
+    function getPeriodKey(freq, d = new Date()) {
+      const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
+      if (freq === 'daily') return `${y}-${m}-${day}`;
+      if (freq === 'weekly') { const j = new Date(y, 0, 1); const days = Math.floor((d - j) / 864e5); return `${y}-W${String(Math.ceil((days + j.getDay() + 1) / 7)).padStart(2, '0')}`; }
+      if (freq === 'monthly') return `${y}-${m}`;
+      if (freq === 'quarterly') return `${y}-Q${Math.ceil((d.getMonth() + 1) / 3)}`;
+      return `${y}-${m}-${day}`;
+    }
+    function getPrevPeriod(freq, key) {
+      if (freq === 'daily') { const d = new Date(key); d.setDate(d.getDate() - 1); return getPeriodKey('daily', d); }
+      if (freq === 'weekly') { const [y, w] = key.split('-W').map(Number); return w <= 1 ? `${y - 1}-W52` : `${y}-W${String(w - 1).padStart(2, '0')}`; }
+      if (freq === 'monthly') { const [y, m] = key.split('-').map(Number); return m <= 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, '0')}`; }
+      if (freq === 'quarterly') { const [y, q] = key.replace('Q', '').split('-').map(Number); return q <= 1 ? `${y - 1}-Q4` : `${y}-Q${q - 1}`; }
+    }
+    function isCompleted(taskId, freq) { return !!state.completions[`${taskId}:${getPeriodKey(freq)}`]; }
 
-// ===== XP =====
-function xpForLevel(l) { return l<=1?0:Math.floor(50*Math.pow(l,1.5)); }
-function getLevel(xp) { let l=1; while(xpForLevel(l+1)<=xp) l++; return l; }
-function getLevelProgress(xp) { const l=getLevel(xp); return (xp-xpForLevel(l))/(xpForLevel(l+1)-xpForLevel(l)); }
-function getOverallLevel() { return Math.floor(AREAS.map(a=>getLevel(state.areaXP[a.id]||0)).reduce((s,l)=>s+l,0)/AREAS.length); }
-function getMultiplier(s) { return s>=30?2:s>=14?1.75:s>=7?1.5:s>=3?1.25:1; }
+    // ===== XP =====
+    function xpForLevel(l) { return l <= 1 ? 0 : Math.floor(50 * Math.pow(l, 1.5)); }
+    function getLevel(xp) { let l = 1; while (xpForLevel(l + 1) <= xp) l++; return l; }
+    function getLevelProgress(xp) { const l = getLevel(xp); return (xp - xpForLevel(l)) / (xpForLevel(l + 1) - xpForLevel(l)); }
+    function getOverallLevel() { return Math.floor(AREAS.map(a => getLevel(state.areaXP[a.id] || 0)).reduce((s, l) => s + l, 0) / AREAS.length); }
+    function getMultiplier(s) { return s >= 30 ? 2 : s >= 14 ? 1.75 : s >= 7 ? 1.5 : s >= 3 ? 1.25 : 1; }
 
-// ===== COMPLETE TASK =====
-function completeTask(taskId,cardEl) {
-  const task=TASKS.find(t=>t.id===taskId); if(!task) return;
-  const period=getPeriodKey(task.frequency); const ck=`${taskId}:${period}`;
-  if(state.completions[ck]) {
-    delete state.completions[ck];
-    const sk=state.streaks[taskId]||{current:0}; const m=getMultiplier(sk.current); const xp=Math.round(task.baseXP*m);
-    state.totalXP=Math.max(0,state.totalXP-xp); state.areaXP[task.areaId]=Math.max(0,(state.areaXP[task.areaId]||0)-xp);
-    saveState(); updateUI(); return;
-  }
-  if(!state.streaks[taskId]) state.streaks[taskId]={current:0,longest:0,lastPeriod:null};
-  const sk=state.streaks[taskId]; const prev=getPrevPeriod(task.frequency,period);
-  if(sk.lastPeriod===prev) sk.current++; else if(sk.lastPeriod!==period) sk.current=1;
-  sk.lastPeriod=period; sk.longest=Math.max(sk.longest,sk.current);
-  const mult=getMultiplier(sk.current); const earned=Math.round(task.baseXP*mult);
-  const oldLevel=getLevel(state.areaXP[task.areaId]||0);
-  state.completions[ck]=Date.now(); state.totalXP+=earned; state.areaXP[task.areaId]=(state.areaXP[task.areaId]||0)+earned;
-  saveState();
-  showXPFloat(cardEl,earned,mult);
-  if([3,7,14,30].includes(sk.current)) showToast(`${sk.current}-streak! ${mult}x multiplier`);
-  const newLevel=getLevel(state.areaXP[task.areaId]);
-  if(newLevel>oldLevel) { const area=AREAS.find(a=>a.id===task.areaId); setTimeout(()=>showLevelUp(area,newLevel),600); }
-  if(navigator.vibrate) navigator.vibrate(30);
-  updateUI();
-}
+    // ===== COMPLETE TASK =====
+    function completeTask(taskId, cardEl) {
+      const task = TASKS.find(t => t.id === taskId); if (!task) return;
+      const period = getPeriodKey(task.frequency); const ck = `${taskId}:${period}`;
+      if (state.completions[ck]) {
+        delete state.completions[ck];
+        const sk = state.streaks[taskId] || { current: 0 }; const m = getMultiplier(sk.current); const xp = Math.round(task.baseXP * m);
+        state.totalXP = Math.max(0, state.totalXP - xp); state.areaXP[task.areaId] = Math.max(0, (state.areaXP[task.areaId] || 0) - xp);
+        saveState(); updateUI(); return;
+      }
+      if (!state.streaks[taskId]) state.streaks[taskId] = { current: 0, longest: 0, lastPeriod: null };
+      const sk = state.streaks[taskId]; const prev = getPrevPeriod(task.frequency, period);
+      if (sk.lastPeriod === prev) sk.current++; else if (sk.lastPeriod !== period) sk.current = 1;
+      sk.lastPeriod = period; sk.longest = Math.max(sk.longest, sk.current);
+      const mult = getMultiplier(sk.current); const earned = Math.round(task.baseXP * mult);
+      const oldLevel = getLevel(state.areaXP[task.areaId] || 0);
+      state.completions[ck] = Date.now(); state.totalXP += earned; state.areaXP[task.areaId] = (state.areaXP[task.areaId] || 0) + earned;
+      saveState();
+      showXPFloat(cardEl, earned, mult);
+      if ([3, 7, 14, 30].includes(sk.current)) showToast(`${sk.current}-streak! ${mult}x multiplier`);
+      const newLevel = getLevel(state.areaXP[task.areaId]);
+      if (newLevel > oldLevel) { const area = AREAS.find(a => a.id === task.areaId); setTimeout(() => showLevelUp(area, newLevel), 600); }
+      if (navigator.vibrate) navigator.vibrate(30);
+      updateUI();
+    }
 
-// ===== ANIMATIONS =====
-function showXPFloat(el,xp,mult) {
-  const r=el.getBoundingClientRect(); const f=document.createElement('div');
-  f.className='xp-float'; f.textContent=mult>1?`+${xp} XP (${mult}x)`:`+${xp} XP`;
-  f.style.left=`${r.right-60}px`; f.style.top=`${r.top}px`;
-  document.body.appendChild(f); setTimeout(()=>f.remove(),1300);
-}
-function showToast(msg) {
-  const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
-  document.body.appendChild(t); setTimeout(()=>t.remove(),3000);
-}
-function showLevelUp(area,level) {
-  const o=document.createElement('div'); o.className='level-up-overlay';
-  o.innerHTML=`<div class="level-up-badge">${icon(area.iconKey,50)}</div>
+    // ===== ANIMATIONS =====
+    function showXPFloat(el, xp, mult) {
+      const r = el.getBoundingClientRect(); const f = document.createElement('div');
+      f.className = 'xp-float'; f.textContent = mult > 1 ? `+${xp} XP (${mult}x)` : `+${xp} XP`;
+      f.style.left = `${r.right - 60}px`; f.style.top = `${r.top}px`;
+      document.body.appendChild(f); setTimeout(() => f.remove(), 1300);
+    }
+    function showToast(msg) {
+      const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+      document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+    }
+    function showLevelUp(area, level) {
+      const o = document.createElement('div'); o.className = 'level-up-overlay';
+      o.innerHTML = `<div class="level-up-badge">${icon(area.iconKey, 50)}</div>
     <div class="level-up-text">Level Up!</div><div class="level-up-level">Level ${level}</div>
     <div class="level-up-area">${area.name}</div><div class="level-up-dismiss">tap to continue</div>`;
-  o.addEventListener('click',()=>o.remove()); document.body.appendChild(o);
-  if(navigator.vibrate) navigator.vibrate([50,30,100]);
-}
-
-// ===== HELPERS =====
-function getAreaCompletion(areaId) {
-  const tasks=TASKS.filter(t=>t.areaId===areaId);
-  const done=tasks.filter(t=>isCompleted(t.id,t.frequency)).length;
-  return { done, total:tasks.length, pct:tasks.length?Math.round(done/tasks.length*100):0 };
-}
-
-// ===== RENDER =====
-function isDesktop() { return window.innerWidth >= 768; }
-function updateUI() {
-  updateGlobalBar();
-  if(isDesktop()) renderDesktop();
-  else {
-    const active=document.querySelector('.view.active');
-    if(active) {
-      if(active.id==='view-dashboard') renderDashboard();
-      else if(active.id==='view-checkin') renderCheckin();
-      else if(active.id==='view-stats') renderStats();
-      else if(active.id==='view-area-detail') renderAreaDetail(active.dataset.areaId);
-      else if(active.id==='view-monthly') renderMonthly();
+      o.addEventListener('click', () => o.remove()); document.body.appendChild(o);
+      if (navigator.vibrate) navigator.vibrate([50, 30, 100]);
     }
-  }
-}
-function updateGlobalBar() {
-  const l=getOverallLevel(); const p=getLevelProgress(state.totalXP);
-  const goal = state.mainGoal || 'Set your main goal';
-  document.getElementById('globalLevel').textContent=`LV ${l}`;
-  document.getElementById('globalXpBar').style.width=`${Math.min(100,p*100)}%`;
-  document.getElementById('xpCurrent').textContent=`${state.totalXP} XP`;
-  document.getElementById('xpNext').textContent=`${xpForLevel(l+1)-state.totalXP} XP to Lv ${l+1}`;
-  const mg=document.getElementById('mainGoal'); if(mg) mg.textContent=`"${goal}"`;
-  const ld=document.getElementById('globalLevelD');
-  if(ld) { ld.textContent=`LV ${l}`; document.getElementById('globalXpBarD').style.width=`${Math.min(100,p*100)}%`;
-    document.getElementById('xpCurrentD').textContent=`${state.totalXP} XP`;
-    document.getElementById('xpNextD').textContent=`${xpForLevel(l+1)-state.totalXP} XP to Lv ${l+1}`;
-    const mgd=document.getElementById('mainGoalD'); if(mgd) mgd.textContent=`"${goal}"`; }
-}
 
-// Helper: render task card HTML
-function taskCardHTML(task, areaColor) {
-  const completed=isCompleted(task.id,task.frequency);
-  const sk=state.streaks[task.id]; const sc=sk?sk.current:0; const m=getMultiplier(sc); const xp=Math.round(task.baseXP*m);
-  return `<div class="task-card ${completed?'completed':''}" onclick="completeTask('${task.id}',this)"
-    ${task.isBoss?`style="border-left:3px solid var(--ink)"`:''}>
+    // ===== HELPERS =====
+    function getAreaCompletion(areaId) {
+      const tasks = TASKS.filter(t => t.areaId === areaId);
+      const done = tasks.filter(t => isCompleted(t.id, t.frequency)).length;
+      return { done, total: tasks.length, pct: tasks.length ? Math.round(done / tasks.length * 100) : 0 };
+    }
+
+    // ===== RENDER =====
+    function isDesktop() { return window.innerWidth >= 768; }
+    function updateUI() {
+      updateGlobalBar();
+      if (isDesktop()) renderDesktop();
+      else {
+        const active = document.querySelector('.view.active');
+        if (active) {
+          if (active.id === 'view-dashboard') renderDashboard();
+          else if (active.id === 'view-checkin') renderCheckin();
+          else if (active.id === 'view-stats') renderStats();
+          else if (active.id === 'view-area-detail') renderAreaDetail(active.dataset.areaId);
+          else if (active.id === 'view-monthly') renderMonthly();
+        }
+      }
+    }
+    function updateGlobalBar() {
+      const l = getOverallLevel(); const p = getLevelProgress(state.totalXP);
+      const goal = state.mainGoal || 'Set your main goal';
+      document.getElementById('globalLevel').textContent = `LV ${l}`;
+      document.getElementById('globalXpBar').style.width = `${Math.min(100, p * 100)}%`;
+      document.getElementById('xpCurrent').textContent = `${state.totalXP} XP`;
+      document.getElementById('xpNext').textContent = `${xpForLevel(l + 1) - state.totalXP} XP to Lv ${l + 1}`;
+      const mg = document.getElementById('mainGoal'); if (mg) mg.textContent = `"${goal}"`;
+      const ld = document.getElementById('globalLevelD');
+      if (ld) {
+        ld.textContent = `LV ${l}`; document.getElementById('globalXpBarD').style.width = `${Math.min(100, p * 100)}%`;
+        document.getElementById('xpCurrentD').textContent = `${state.totalXP} XP`;
+        document.getElementById('xpNextD').textContent = `${xpForLevel(l + 1) - state.totalXP} XP to Lv ${l + 1}`;
+        const mgd = document.getElementById('mainGoalD'); if (mgd) mgd.textContent = `"${goal}"`;
+      }
+    }
+
+    // Helper: render task card HTML
+    function taskCardHTML(task, areaColor) {
+      const completed = isCompleted(task.id, task.frequency);
+      const sk = state.streaks[task.id]; const sc = sk ? sk.current : 0; const m = getMultiplier(sc); const xp = Math.round(task.baseXP * m);
+      return `<div class="task-card ${completed ? 'completed' : ''}" onclick="completeTask('${task.id}',this)"
+    ${task.isBoss ? `style="border-left:3px solid var(--ink)"` : ''}>
     <div class="task-checkbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
     <div class="task-info">
-      <div class="task-title">${task.isBoss?'~ ':''}${task.title}</div>
-      <div class="task-meta"><span class="task-freq">${task.frequency}</span>${sc>1?`<span class="task-streak">${icon('fire',14)} ${sc}</span>`:''}</div>
+      <div class="task-title">${task.isBoss ? '~ ' : ''}${task.title}</div>
+      <div class="task-meta"><span class="task-freq">${task.frequency}</span>${sc > 1 ? `<span class="task-streak">${icon('fire', 14)} ${sc}</span>` : ''}</div>
     </div>
-    <div class="task-xp">${completed?'✓':`+${xp}`}</div>
+    <div class="task-xp">${completed ? '✓' : `+${xp}`}</div>
   </div>`;
-}
-
-// Helper: area tasks grouped HTML
-function areaTasksGroupHTML(areas_list, mode) {
-  return areas_list.map(area => {
-    let tasks;
-    if (mode === 'daily') {
-      tasks = TASKS.filter(t => t.areaId === area.id && t.frequency === 'daily');
-    } else if (mode === 'pending') {
-      tasks = TASKS.filter(t => t.areaId === area.id && t.frequency !== 'daily' && !isCompleted(t.id, t.frequency));
-    } else {
-      tasks = TASKS.filter(t => t.areaId === area.id);
     }
-    if(!tasks.length) return '';
-    const done=tasks.filter(t=>isCompleted(t.id,t.frequency)).length;
-    return `<div style="margin-bottom:14px">
+
+    // Helper: area tasks grouped HTML
+    function areaTasksGroupHTML(areas_list, mode) {
+      return areas_list.map(area => {
+        let tasks;
+        if (mode === 'daily') {
+          tasks = TASKS.filter(t => t.areaId === area.id && t.frequency === 'daily');
+        } else if (mode === 'pending') {
+          tasks = TASKS.filter(t => t.areaId === area.id && t.frequency !== 'daily' && !isCompleted(t.id, t.frequency));
+        } else {
+          tasks = TASKS.filter(t => t.areaId === area.id);
+        }
+        if (!tasks.length) return '';
+        const done = tasks.filter(t => isCompleted(t.id, t.frequency)).length;
+        return `<div style="margin-bottom:14px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        ${icon(area.iconKey,16)}
+        ${icon(area.iconKey, 16)}
         <div style="font-family:var(--font-display);font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-secondary)">${area.name}</div>
         <div style="font-size:0.68rem;color:var(--text-muted);margin-left:auto">${done}/${tasks.length}</div>
       </div>
-      ${tasks.map(t=>taskCardHTML(t,area.color)).join('')}
+      ${tasks.map(t => taskCardHTML(t, area.color)).join('')}
     </div>`;
-  }).join('');
-}
+      }).join('');
+    }
 
-// Helper: boss list HTML
-function bossListHTML(containerId) {
-  const bossTasks=TASKS.filter(t=>t.isBoss&&!isCompleted(t.id,t.frequency)).slice(0,3);
-  if(!bossTasks.length) return '<p style="color:var(--text-muted);font-size:0.82rem;">All bosses defeated!</p>';
-  return bossTasks.map(boss=>{
-    const area=AREAS.find(a=>a.id===boss.areaId);
-    const nonBoss=TASKS.filter(t=>t.areaId===boss.areaId&&!t.isBoss);
-    const done=nonBoss.filter(t=>isCompleted(t.id,t.frequency)).length;
-    const req=Math.ceil(nonBoss.length*0.75); const powered=done>=req;
-    return `<div class="boss-card" onclick="${powered?`completeTask('${boss.id}',this)`:''}">
+    // Helper: boss list HTML
+    function bossListHTML(containerId) {
+      const bossTasks = TASKS.filter(t => t.isBoss && !isCompleted(t.id, t.frequency)).slice(0, 3);
+      if (!bossTasks.length) return '<p style="color:var(--text-muted);font-size:0.82rem;">All bosses defeated!</p>';
+      return bossTasks.map(boss => {
+        const area = AREAS.find(a => a.id === boss.areaId);
+        const nonBoss = TASKS.filter(t => t.areaId === boss.areaId && !t.isBoss);
+        const done = nonBoss.filter(t => isCompleted(t.id, t.frequency)).length;
+        const req = Math.ceil(nonBoss.length * 0.75); const powered = done >= req;
+        return `<div class="boss-card" onclick="${powered ? `completeTask('${boss.id}',this)` : ''}">
       <div class="boss-label">~ Boss — ${area.name}</div>
       <div class="boss-title">${boss.title}</div>
-      <div class="boss-power-bar"><div class="boss-power-fill" style="width:${Math.min(100,done/req*100)}%"></div></div>
-      <div class="boss-power-label">${powered?'Powered up! Tap to fight!':`Power up: ${done}/${req} tasks`}</div>
+      <div class="boss-power-bar"><div class="boss-power-fill" style="width:${Math.min(100, done / req * 100)}%"></div></div>
+      <div class="boss-power-label">${powered ? 'Powered up! Tap to fight!' : `Power up: ${done}/${req} tasks`}</div>
     </div>`;
-  }).join('');
-}
+      }).join('');
+    }
 
-// ----- Mobile: Dashboard -----
-let currentCarouselIndex=0;
-function renderDashboard() {
-  const carousel=document.getElementById('areaCarousel');
-  const dots=document.getElementById('carouselDots');
-  carousel.innerHTML=AREAS.map((area,i)=>{
-    const xp=state.areaXP[area.id]||0; const level=getLevel(xp); const progress=getLevelProgress(xp); const comp=getAreaCompletion(area.id);
-    return `<div class="area-card" onclick="showAreaDetail('${area.id}')" data-index="${i}">
-      <div><div class="area-card-top"><div class="area-card-icon">${icon(area.iconKey,36)}</div>
+    // ----- Mobile: Dashboard -----
+    let currentCarouselIndex = 0;
+    function renderDashboard() {
+      const carousel = document.getElementById('areaCarousel');
+      const dots = document.getElementById('carouselDots');
+      carousel.innerHTML = AREAS.map((area, i) => {
+        const xp = state.areaXP[area.id] || 0; const level = getLevel(xp); const progress = getLevelProgress(xp); const comp = getAreaCompletion(area.id);
+        return `<div class="area-card" onclick="showAreaDetail('${area.id}')" data-index="${i}">
+      <div><div class="area-card-top"><div class="area-card-icon">${icon(area.iconKey, 36)}</div>
         <div class="area-card-level-badge">LV ${level}</div></div>
       <div class="area-card-name">${area.name}</div>
-      <div class="area-card-progress-text">${xp} XP · ${xpForLevel(level+1)-xp} to next level</div></div>
-      <div><div class="area-card-bar"><div class="area-card-bar-fill" style="width:${progress*100}%"></div></div>
+      <div class="area-card-progress-text">${xp} XP · ${xpForLevel(level + 1) - xp} to next level</div></div>
+      <div><div class="area-card-bar"><div class="area-card-bar-fill" style="width:${progress * 100}%"></div></div>
       <div class="area-card-tasks-done"><span style="color:var(--ink);font-weight:700">${comp.done}/${comp.total}</span> tasks this period</div></div>
     </div>`;
-  }).join('');
-  dots.innerHTML=AREAS.map((_,i)=>`<div class="carousel-dot ${i===currentCarouselIndex?'active':''}" data-i="${i}"></div>`).join('');
-  carousel.onscroll=()=>{ const cw=carousel.firstElementChild?.offsetWidth||1; const idx=Math.round(carousel.scrollLeft/(cw+14));
-    if(idx!==currentCarouselIndex) { currentCarouselIndex=idx; dots.querySelectorAll('.carousel-dot').forEach((d,i)=>d.classList.toggle('active',i===idx)); }};
-  document.getElementById('bossList').innerHTML=bossListHTML('bossList');
-}
+      }).join('');
+      dots.innerHTML = AREAS.map((_, i) => `<div class="carousel-dot ${i === currentCarouselIndex ? 'active' : ''}" data-i="${i}"></div>`).join('');
+      carousel.onscroll = () => {
+        const cw = carousel.firstElementChild?.offsetWidth || 1; const idx = Math.round(carousel.scrollLeft / (cw + 14));
+        if (idx !== currentCarouselIndex) { currentCarouselIndex = idx; dots.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === idx)); }
+      };
+      document.getElementById('bossList').innerHTML = bossListHTML('bossList');
+    }
 
-// ----- Mobile: Area Detail -----
-function showAreaDetail(areaId) { hideAllViews(); const v=document.getElementById('view-area-detail'); v.dataset.areaId=areaId; v.classList.add('active'); renderAreaDetail(areaId); }
-function renderAreaDetail(areaId) {
-  const area=AREAS.find(a=>a.id===areaId); if(!area) return;
-  const v=document.getElementById('view-area-detail');
-  const xp=state.areaXP[areaId]||0; const level=getLevel(xp); const progress=getLevelProgress(xp);
-  const tasks=TASKS.filter(t=>t.areaId===areaId);
-  v.innerHTML=`<div class="area-detail-header"><div class="back-btn" onclick="switchView('dashboard')">
+    // ----- Mobile: Area Detail -----
+    function showAreaDetail(areaId) { hideAllViews(); const v = document.getElementById('view-area-detail'); v.dataset.areaId = areaId; v.classList.add('active'); renderAreaDetail(areaId); }
+    function renderAreaDetail(areaId) {
+      const area = AREAS.find(a => a.id === areaId); if (!area) return;
+      const v = document.getElementById('view-area-detail');
+      const xp = state.areaXP[areaId] || 0; const level = getLevel(xp); const progress = getLevelProgress(xp);
+      const tasks = TASKS.filter(t => t.areaId === areaId);
+      v.innerHTML = `<div class="area-detail-header"><div class="back-btn" onclick="switchView('dashboard')">
     <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg></div>
-    <div><div class="area-detail-title">${icon(area.iconKey,28)} ${area.name}</div>
+    <div><div class="area-detail-title">${icon(area.iconKey, 28)} ${area.name}</div>
     <div class="area-detail-level">Level ${level} · ${xp} XP</div></div></div>
-    <div class="area-detail-xp-bar"><div class="area-detail-xp-bar-fill" style="width:${progress*100}%"></div></div>
-    <div class="area-detail-xp-label">${xpForLevel(level+1)-xp} XP to Level ${level+1}</div>
-    ${tasks.map(t=>taskCardHTML(t,area.color)).join('')}`;
-}
+    <div class="area-detail-xp-bar"><div class="area-detail-xp-bar-fill" style="width:${progress * 100}%"></div></div>
+    <div class="area-detail-xp-label">${xpForLevel(level + 1) - xp} XP to Level ${level + 1}</div>
+    ${tasks.map(t => taskCardHTML(t, area.color)).join('')}`;
+    }
 
-// ----- Mobile: Monthly -----
-function showMonthly() { hideAllViews(); document.getElementById('view-monthly').classList.add('active'); renderMonthly(); }
-let monthlyChart=null;
-function renderMonthly() {
-  const v=document.getElementById('view-monthly');
-  const monthName=new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  v.innerHTML=`<div class="monthly-header"><div class="back-btn" onclick="switchView('dashboard')">
+    // ----- Mobile: Monthly -----
+    function showMonthly() { hideAllViews(); document.getElementById('view-monthly').classList.add('active'); renderMonthly(); }
+    let monthlyChart = null;
+    function renderMonthly() {
+      const v = document.getElementById('view-monthly');
+      const monthName = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      v.innerHTML = `<div class="monthly-header"><div class="back-btn" onclick="switchView('dashboard')">
     <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg></div>
     <div><h2 style="font-family:var(--font-hand);font-size:1.5rem;color:var(--ink)">Monthly Progress</h2></div></div>
     <div class="monthly-subtitle">${monthName}</div>
     <div class="monthly-radar-container"><canvas id="monthlyRadar" height="280"></canvas></div>
-    ${AREAS.map(area=>{const comp=getAreaCompletion(area.id);
-      return `<div class="monthly-area-row">${icon(area.iconKey,24)}<div class="monthly-area-info">
+    ${AREAS.map(area => {
+        const comp = getAreaCompletion(area.id);
+        return `<div class="monthly-area-row">${icon(area.iconKey, 24)}<div class="monthly-area-info">
         <div class="monthly-area-name">${area.name}</div>
         <div class="monthly-area-bar"><div class="monthly-area-bar-fill" style="width:${comp.pct}%"></div></div>
-      </div><div class="monthly-area-pct">${comp.pct}%</div></div>`;}).join('')}`;
-  setTimeout(()=>{ const ctx=document.getElementById('monthlyRadar'); if(!ctx) return;
-    const data=AREAS.map(a=>getLevel(state.areaXP[a.id]||0)); const maxL=Math.max(5,...data);
-    if(monthlyChart){monthlyChart.destroy();monthlyChart=null;}
-    monthlyChart=new Chart(ctx.getContext('2d'),{type:'radar',data:{labels:AREAS.map(a=>a.name),datasets:[{data,backgroundColor:'rgba(27,124,209,0.06)',borderColor:'var(--ink)',borderWidth:2.5,pointBackgroundColor:'var(--ink)',pointBorderColor:'#fff',pointBorderWidth:2,pointRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{r:{min:0,max:maxL,ticks:{display:false,stepSize:1},grid:{color:'rgba(0,0,0,0.06)'},angleLines:{color:'rgba(0,0,0,0.06)'},pointLabels:{font:{family:'Space Grotesk',size:10,weight:600},color:'#555566'}}},animation:{duration:600,easing:'easeOutQuart'}}});
-  },50);
-}
+      </div><div class="monthly-area-pct">${comp.pct}%</div></div>`;
+      }).join('')}`;
+      setTimeout(() => {
+        const ctx = document.getElementById('monthlyRadar'); if (!ctx) return;
+        const data = AREAS.map(a => getLevel(state.areaXP[a.id] || 0)); const maxL = Math.max(5, ...data);
+        if (monthlyChart) { monthlyChart.destroy(); monthlyChart = null; }
+        monthlyChart = new Chart(ctx.getContext('2d'), {
+          type: 'radar', data: { labels: AREAS.map(a => a.name), datasets: [{ data, backgroundColor: 'rgba(27,124,209,0.06)', borderColor: 'var(--ink)', borderWidth: 2.5, pointBackgroundColor: 'var(--ink)', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] },
+          options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: maxL, ticks: { display: false, stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.06)' }, angleLines: { color: 'rgba(0,0,0,0.06)' }, pointLabels: { font: { family: 'Space Grotesk', size: 10, weight: 600 }, color: '#555566' } } }, animation: { duration: 600, easing: 'easeOutQuart' } }
+        });
+      }, 50);
+    }
 
-// ----- Mobile: Check-in -----
-let activeCheckinTab = 'daily';
-function switchCheckinTab(tab) {
-  activeCheckinTab = tab;
-  document.querySelectorAll('.checkin-tab').forEach(t => t.classList.toggle('active', t.dataset.checkinTab === tab));
-  renderCheckin();
-}
-function renderCheckin() {
-  document.getElementById('checkinDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  if (activeCheckinTab === 'daily') {
-    document.getElementById('questList').innerHTML = areaTasksGroupHTML(AREAS, 'daily');
-  } else {
-    document.getElementById('questList').innerHTML = areaTasksGroupHTML(AREAS, 'pending');
-  }
-}
+    // ----- Mobile: Check-in -----
+    let activeCheckinTab = 'daily';
+    function switchCheckinTab(tab) {
+      activeCheckinTab = tab;
+      document.querySelectorAll('.checkin-tab').forEach(t => t.classList.toggle('active', t.dataset.checkinTab === tab));
+      renderCheckin();
+    }
+    function renderCheckin() {
+      document.getElementById('checkinDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      if (activeCheckinTab === 'daily') {
+        document.getElementById('questList').innerHTML = areaTasksGroupHTML(AREAS, 'daily');
+      } else {
+        document.getElementById('questList').innerHTML = areaTasksGroupHTML(AREAS, 'pending');
+      }
+    }
 
-// ----- Mobile: Stats -----
-function renderStats() {
-  const c=document.getElementById('statsContent');
-  const total=Object.keys(state.completions).length;
-  const todayKey=getPeriodKey('daily');
-  const today=Object.keys(state.completions).filter(k=>k.endsWith(`:${todayKey}`)).length;
-  const topStreaks=Object.entries(state.streaks).filter(([_,s])=>s.current>0).sort((a,b)=>b[1].current-a[1].current).slice(0,5);
-  const cells=[]; for(let i=27;i>=0;i--) { const d=new Date();d.setDate(d.getDate()-i); const k=getPeriodKey('daily',d);
-    const cnt=Object.keys(state.completions).filter(c=>c.endsWith(`:${k}`)).length;
-    let l=''; if(cnt>=8)l='l4';else if(cnt>=5)l='l3';else if(cnt>=2)l='l2';else if(cnt>=1)l='l1';
-    cells.push(`<div class="heatmap-cell ${l}"></div>`); }
-  c.innerHTML=`
+    // ----- Mobile: Stats -----
+    function renderStats() {
+      const c = document.getElementById('statsContent');
+      const total = Object.keys(state.completions).length;
+      const todayKey = getPeriodKey('daily');
+      const today = Object.keys(state.completions).filter(k => k.endsWith(`:${todayKey}`)).length;
+      const topStreaks = Object.entries(state.streaks).filter(([_, s]) => s.current > 0).sort((a, b) => b[1].current - a[1].current).slice(0, 5);
+      const cells = []; for (let i = 27; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i); const k = getPeriodKey('daily', d);
+        const cnt = Object.keys(state.completions).filter(c => c.endsWith(`:${k}`)).length;
+        let l = ''; if (cnt >= 8) l = 'l4'; else if (cnt >= 5) l = 'l3'; else if (cnt >= 2) l = 'l2'; else if (cnt >= 1) l = 'l1';
+        cells.push(`<div class="heatmap-cell ${l}"></div>`);
+      }
+      c.innerHTML = `
     <div class="stat-row"><span class="stat-label">Total XP</span><span class="stat-value" style="color:var(--xp-gold)">${state.totalXP}</span></div>
     <div class="stat-row"><span class="stat-label">Overall Level</span><span class="stat-value">${getOverallLevel()}</span></div>
     <div class="stat-row"><span class="stat-label">Tasks Completed</span><span class="stat-value">${total}</span></div>
     <div class="stat-row"><span class="stat-label">Today</span><span class="stat-value">${today}</span></div>
     <div class="section-title" style="margin-top:22px">Last 28 Days</div>
     <div style="background:var(--bg-card);border-radius:var(--radius-sm);padding:14px;border:2px solid var(--border)"><div class="heatmap">${cells.join('')}</div></div>
-    ${topStreaks.length?`<div class="section-title" style="margin-top:22px">Active Streaks</div>
-      ${topStreaks.map(([id,s])=>{const t=TASKS.find(x=>x.id===id);const m=getMultiplier(s.current);
-        return `<div class="streak-card"><div class="streak-fire-icon">${icon('fire',20)}</div><div class="streak-info"><div class="streak-task-name">${t?t.title:id}</div></div>
-        <div class="streak-count">${s.current}</div>${m>1?`<div class="streak-mult">${m}x</div>`:''}</div>`;}).join('')}`:''}`;
-}
+    ${topStreaks.length ? `<div class="section-title" style="margin-top:22px">Active Streaks</div>
+      ${topStreaks.map(([id, s]) => {
+        const t = TASKS.find(x => x.id === id); const m = getMultiplier(s.current);
+        return `<div class="streak-card"><div class="streak-fire-icon">${icon('fire', 20)}</div><div class="streak-info"><div class="streak-task-name">${t ? t.title : id}</div></div>
+        <div class="streak-count">${s.current}</div>${m > 1 ? `<div class="streak-mult">${m}x</div>` : ''}</div>`;
+      }).join('')}` : ''}`;
+    }
 
-// ===== DESKTOP RENDERING =====
-let desktopRadarChart=null;
-function renderDesktop() {
-  // Areas
-  document.getElementById('desktopAreaGrid').innerHTML=AREAS.map(area=>{
-    const xp=state.areaXP[area.id]||0;const level=getLevel(xp);const progress=getLevelProgress(xp);const comp=getAreaCompletion(area.id);
-    return `<div class="desktop-area-card" onclick="showDesktopAreaDetail('${area.id}')">
-      <div class="desktop-area-card-top">${icon(area.iconKey,22)}<div class="desktop-area-card-lv">LV ${level}</div></div>
+    // ===== DESKTOP RENDERING =====
+    let desktopRadarChart = null;
+    function renderDesktop() {
+      // Areas
+      document.getElementById('desktopAreaGrid').innerHTML = AREAS.map(area => {
+        const xp = state.areaXP[area.id] || 0; const level = getLevel(xp); const progress = getLevelProgress(xp); const comp = getAreaCompletion(area.id);
+        return `<div class="desktop-area-card" onclick="showDesktopAreaDetail('${area.id}')">
+      <div class="desktop-area-card-top">${icon(area.iconKey, 22)}<div class="desktop-area-card-lv">LV ${level}</div></div>
       <div class="desktop-area-card-name">${area.name}</div>
-      <div class="desktop-area-card-bar"><div class="desktop-area-card-bar-fill" style="width:${progress*100}%"></div></div>
+      <div class="desktop-area-card-bar"><div class="desktop-area-card-bar-fill" style="width:${progress * 100}%"></div></div>
       <div class="desktop-area-card-meta"><span style="color:var(--ink);font-weight:700">${comp.done}/${comp.total}</span> done</div>
-    </div>`;}).join('');
-  // Radar
-  const ctx=document.getElementById('desktopRadar'); if(ctx) {
-    const data=AREAS.map(a=>getLevel(state.areaXP[a.id]||0)); const maxL=Math.max(5,...data);
-    if(desktopRadarChart) { desktopRadarChart.data.datasets[0].data=data; desktopRadarChart.options.scales.r.max=maxL; desktopRadarChart.update('none'); }
-    else { desktopRadarChart=new Chart(ctx.getContext('2d'),{type:'radar',data:{labels:AREAS.map(a=>a.name),datasets:[{data,backgroundColor:'rgba(27,124,209,0.06)',borderColor:'#1B7CD1',borderWidth:2.5,pointBackgroundColor:'#1B7CD1',pointBorderColor:'#fff',pointBorderWidth:2,pointRadius:5}]},
-      options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{r:{min:0,max:maxL,ticks:{display:false,stepSize:1},grid:{color:'rgba(0,0,0,0.06)'},angleLines:{color:'rgba(0,0,0,0.06)'},pointLabels:{font:{family:'Space Grotesk',size:10,weight:600},color:'#555566'}}},animation:{duration:600,easing:'easeOutQuart'}}}); }
-  }
-  // Check-in
-  document.getElementById('desktopCheckinDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-  document.getElementById('desktopQuestList').innerHTML=areaTasksGroupHTML(AREAS, 'all');
-  // Bosses
-  document.getElementById('desktopBossList').innerHTML=bossListHTML();
-  // Stats
-  const total=Object.keys(state.completions).length; const todayKey=getPeriodKey('daily');
-  const today=Object.keys(state.completions).filter(k=>k.endsWith(`:${todayKey}`)).length;
-  document.getElementById('desktopStatsGrid').innerHTML=`
+    </div>`;
+      }).join('');
+      // Radar
+      const ctx = document.getElementById('desktopRadar'); if (ctx) {
+        const data = AREAS.map(a => getLevel(state.areaXP[a.id] || 0)); const maxL = Math.max(5, ...data);
+        if (desktopRadarChart) { desktopRadarChart.data.datasets[0].data = data; desktopRadarChart.options.scales.r.max = maxL; desktopRadarChart.update('none'); }
+        else {
+          desktopRadarChart = new Chart(ctx.getContext('2d'), {
+            type: 'radar', data: { labels: AREAS.map(a => a.name), datasets: [{ data, backgroundColor: 'rgba(27,124,209,0.06)', borderColor: '#1B7CD1', borderWidth: 2.5, pointBackgroundColor: '#1B7CD1', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5 }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { r: { min: 0, max: maxL, ticks: { display: false, stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.06)' }, angleLines: { color: 'rgba(0,0,0,0.06)' }, pointLabels: { font: { family: 'Space Grotesk', size: 10, weight: 600 }, color: '#555566' } } }, animation: { duration: 600, easing: 'easeOutQuart' } }
+          });
+        }
+      }
+      // Check-in
+      document.getElementById('desktopCheckinDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      document.getElementById('desktopQuestList').innerHTML = areaTasksGroupHTML(AREAS, 'all');
+      // Bosses
+      document.getElementById('desktopBossList').innerHTML = bossListHTML();
+      // Stats
+      const total = Object.keys(state.completions).length; const todayKey = getPeriodKey('daily');
+      const today = Object.keys(state.completions).filter(k => k.endsWith(`:${todayKey}`)).length;
+      document.getElementById('desktopStatsGrid').innerHTML = `
     <div class="desktop-stat-item"><span class="desktop-stat-value" style="color:var(--xp-gold)">${state.totalXP}</span><div class="desktop-stat-label">Total XP</div></div>
     <div class="desktop-stat-item"><span class="desktop-stat-value">${getOverallLevel()}</span><div class="desktop-stat-label">Level</div></div>
     <div class="desktop-stat-item"><span class="desktop-stat-value">${total}</span><div class="desktop-stat-label">Completed</div></div>
     <div class="desktop-stat-item"><span class="desktop-stat-value">${today}</span><div class="desktop-stat-label">Today</div></div>`;
-  const hm=document.getElementById('desktopHeatmap'); hm.innerHTML='';
-  for(let i=27;i>=0;i--) { const d=new Date();d.setDate(d.getDate()-i); const k=getPeriodKey('daily',d);
-    const cnt=Object.keys(state.completions).filter(c=>c.endsWith(`:${k}`)).length;
-    let l=''; if(cnt>=8)l='l4';else if(cnt>=5)l='l3';else if(cnt>=2)l='l2';else if(cnt>=1)l='l1';
-    hm.innerHTML+=`<div class="heatmap-cell ${l}"></div>`; }
-  // Streaks
-  const topStreaks=Object.entries(state.streaks).filter(([_,s])=>s.current>0).sort((a,b)=>b[1].current-a[1].current).slice(0,5);
-  document.getElementById('desktopStreaks').innerHTML=topStreaks.length?topStreaks.map(([id,s])=>{const t=TASKS.find(x=>x.id===id);const m=getMultiplier(s.current);
-    return `<div class="streak-card"><div class="streak-fire-icon">${icon('fire',18)}</div><div class="streak-info"><div class="streak-task-name">${t?t.title:id}</div></div>
-    <div class="streak-count">${s.current}</div>${m>1?`<div class="streak-mult">${m}x</div>`:''}</div>`;}).join(''):'<p style="font-size:0.78rem;color:var(--text-muted)">No active streaks yet</p>';
-  // Monthly bars
-  document.getElementById('desktopMonthlyBars').innerHTML=AREAS.map(area=>{const comp=getAreaCompletion(area.id);
-    return `<div class="monthly-area-row">${icon(area.iconKey,20)}<div class="monthly-area-info">
+      const hm = document.getElementById('desktopHeatmap'); hm.innerHTML = '';
+      for (let i = 27; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i); const k = getPeriodKey('daily', d);
+        const cnt = Object.keys(state.completions).filter(c => c.endsWith(`:${k}`)).length;
+        let l = ''; if (cnt >= 8) l = 'l4'; else if (cnt >= 5) l = 'l3'; else if (cnt >= 2) l = 'l2'; else if (cnt >= 1) l = 'l1';
+        hm.innerHTML += `<div class="heatmap-cell ${l}"></div>`;
+      }
+      // Streaks
+      const topStreaks = Object.entries(state.streaks).filter(([_, s]) => s.current > 0).sort((a, b) => b[1].current - a[1].current).slice(0, 5);
+      document.getElementById('desktopStreaks').innerHTML = topStreaks.length ? topStreaks.map(([id, s]) => {
+        const t = TASKS.find(x => x.id === id); const m = getMultiplier(s.current);
+        return `<div class="streak-card"><div class="streak-fire-icon">${icon('fire', 18)}</div><div class="streak-info"><div class="streak-task-name">${t ? t.title : id}</div></div>
+    <div class="streak-count">${s.current}</div>${m > 1 ? `<div class="streak-mult">${m}x</div>` : ''}</div>`;
+      }).join('') : '<p style="font-size:0.78rem;color:var(--text-muted)">No active streaks yet</p>';
+      // Monthly bars
+      document.getElementById('desktopMonthlyBars').innerHTML = AREAS.map(area => {
+        const comp = getAreaCompletion(area.id);
+        return `<div class="monthly-area-row">${icon(area.iconKey, 20)}<div class="monthly-area-info">
       <div class="monthly-area-name">${area.name}</div>
       <div class="monthly-area-bar"><div class="monthly-area-bar-fill" style="width:${comp.pct}%"></div></div>
-    </div><div class="monthly-area-pct">${comp.pct}%</div></div>`;}).join('');
-}
+    </div><div class="monthly-area-pct">${comp.pct}%</div></div>`;
+      }).join('');
+    }
 
-function showDesktopAreaDetail(areaId) {
-  const area=AREAS.find(a=>a.id===areaId); if(!area) return;
-  const xp=state.areaXP[areaId]||0;const level=getLevel(xp);const progress=getLevelProgress(xp);
-  const tasks=TASKS.filter(t=>t.areaId===areaId);
-  const panel=document.getElementById('desktopAreaDetail');
-  document.getElementById('desktopCheckin').classList.add('hidden'); panel.classList.add('active');
-  panel.innerHTML=`<div class="area-detail-header"><div class="back-btn" onclick="closeDesktopAreaDetail()">
+    function showDesktopAreaDetail(areaId) {
+      const area = AREAS.find(a => a.id === areaId); if (!area) return;
+      const xp = state.areaXP[areaId] || 0; const level = getLevel(xp); const progress = getLevelProgress(xp);
+      const tasks = TASKS.filter(t => t.areaId === areaId);
+      const panel = document.getElementById('desktopAreaDetail');
+      document.getElementById('desktopCheckin').classList.add('hidden'); panel.classList.add('active');
+      panel.innerHTML = `<div class="area-detail-header"><div class="back-btn" onclick="closeDesktopAreaDetail()">
     <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg></div>
-    <div><div class="area-detail-title">${icon(area.iconKey,28)} ${area.name}</div>
+    <div><div class="area-detail-title">${icon(area.iconKey, 28)} ${area.name}</div>
     <div class="area-detail-level">Level ${level} · ${xp} XP</div></div></div>
-    <div class="area-detail-xp-bar"><div class="area-detail-xp-bar-fill" style="width:${progress*100}%"></div></div>
-    <div class="area-detail-xp-label">${xpForLevel(level+1)-xp} XP to Level ${level+1}</div>
-    <div class="desktop-tasks-scroll">${tasks.map(t=>taskCardHTML(t,area.color)).join('')}</div>`;
-}
-function closeDesktopAreaDetail() { document.getElementById('desktopAreaDetail').classList.remove('active'); document.getElementById('desktopCheckin').classList.remove('hidden'); }
+    <div class="area-detail-xp-bar"><div class="area-detail-xp-bar-fill" style="width:${progress * 100}%"></div></div>
+    <div class="area-detail-xp-label">${xpForLevel(level + 1) - xp} XP to Level ${level + 1}</div>
+    <div class="desktop-tasks-scroll">${tasks.map(t => taskCardHTML(t, area.color)).join('')}</div>`;
+    }
+    function closeDesktopAreaDetail() { document.getElementById('desktopAreaDetail').classList.remove('active'); document.getElementById('desktopCheckin').classList.remove('hidden'); }
 
-window.addEventListener('resize',()=>updateUI());
+    window.addEventListener('resize', () => updateUI());
 
-// ===== NAVIGATION =====
-function hideAllViews() { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); }
-function switchView(viewId) {
-  hideAllViews(); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById(`view-${viewId}`).classList.add('active');
-  const nb=document.querySelector(`[data-view="${viewId}"]`); if(nb) nb.classList.add('active');
-  updateUI();
-}
-document.querySelectorAll('.nav-item').forEach(btn=>btn.addEventListener('click',()=>switchView(btn.dataset.view)));
+    // ===== NAVIGATION =====
+    function hideAllViews() { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); }
+    function switchView(viewId) {
+      hideAllViews(); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById(`view-${viewId}`).classList.add('active');
+      const nb = document.querySelector(`[data-view="${viewId}"]`); if (nb) nb.classList.add('active');
+      updateUI();
+    }
+    document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
 
-// ===== SETTINGS =====
-const API_KEY_STORE = 'harada-quest-api-key';
-const COACH_CACHE_KEY = 'harada-quest-coach-cache';
+    // ===== SETTINGS =====
+    const API_KEY_STORE = 'harada-quest-api-key';
+    const COACH_CACHE_KEY = 'harada-quest-coach-cache';
 
-function getApiKey() { return localStorage.getItem(API_KEY_STORE) || ''; }
-function saveApiKey(key) { localStorage.setItem(API_KEY_STORE, key); }
-function deleteApiKey() { localStorage.removeItem(API_KEY_STORE); }
+    function getApiKey() { return localStorage.getItem(API_KEY_STORE) || ''; }
+    function saveApiKey(key) { localStorage.setItem(API_KEY_STORE, key); }
+    function deleteApiKey() { localStorage.removeItem(API_KEY_STORE); }
 
-function showSettings() {
-  const key = getApiKey();
-  const masked = key ? '••••••••' + key.slice(-8) : '';
-  const goal = state.mainGoal || '';
-  const overlay = document.createElement('div');
-  overlay.className = 'settings-overlay';
+    function showSettings() {
+      const key = getApiKey();
+      const masked = key ? '••••••••' + key.slice(-8) : '';
+      const goal = state.mainGoal || '';
+      const overlay = document.createElement('div');
+      overlay.className = 'settings-overlay';
 
-  // Build areas + tasks sections
-  const areasHTML = AREAS.map((area, ai) => {
-    const tasks = TASKS.filter(t => t.areaId === area.id);
-    return `<div>
+      // Build areas + tasks sections
+      const areasHTML = AREAS.map((area, ai) => {
+        const tasks = TASKS.filter(t => t.areaId === area.id);
+        return `<div>
       <div class="settings-area-row" onclick="this.querySelector('.settings-area-chevron').classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
         <div class="settings-area-icon">${icon(area.iconKey, 22)}</div>
         <div class="settings-area-name">${area.name}</div>
@@ -1320,17 +2663,17 @@ function showSettings() {
         ${tasks.map((t, ti) => `<div class="settings-task-row">
           <input class="settings-input-sm" data-task-id="${t.id}" data-field="title" value="${t.title}" />
           <select class="settings-task-freq" data-task-id="${t.id}" data-field="frequency">
-            <option value="daily" ${t.frequency==='daily'?'selected':''}>Daily</option>
-            <option value="weekly" ${t.frequency==='weekly'?'selected':''}>Weekly</option>
-            <option value="monthly" ${t.frequency==='monthly'?'selected':''}>Monthly</option>
-            <option value="quarterly" ${t.frequency==='quarterly'?'selected':''}>Quarterly</option>
+            <option value="daily" ${t.frequency === 'daily' ? 'selected' : ''}>Daily</option>
+            <option value="weekly" ${t.frequency === 'weekly' ? 'selected' : ''}>Weekly</option>
+            <option value="monthly" ${t.frequency === 'monthly' ? 'selected' : ''}>Monthly</option>
+            <option value="quarterly" ${t.frequency === 'quarterly' ? 'selected' : ''}>Quarterly</option>
           </select>
         </div>`).join('')}
       </div>
     </div>`;
-  }).join('');
+      }).join('');
 
-  overlay.innerHTML = `<div class="settings-inner">
+      overlay.innerHTML = `<div class="settings-inner">
     <div class="settings-header">
       <div class="settings-title">Settings</div>
       <div class="settings-close" onclick="this.closest('.settings-overlay').remove()">
@@ -1372,149 +2715,149 @@ function showSettings() {
       </div>
     </div>
   </div>`;
-  document.body.appendChild(overlay);
-}
-
-async function handleSaveSettings() {
-  const goalInput = document.getElementById('settingsGoalInput');
-  const keyInput = document.getElementById('settingsKeyInput');
-  const status = document.getElementById('settingsStatus');
-  const goal = goalInput?.value.trim();
-  const key = keyInput?.value.trim();
-
-  // Save goal
-  if (goal) { state.mainGoal = goal; saveState(); }
-
-  // Save area name changes
-  document.querySelectorAll('[data-area-idx][data-field="name"]').forEach(input => {
-    const idx = parseInt(input.dataset.areaIdx);
-    if (AREAS[idx] && input.value.trim()) {
-      AREAS[idx].name = input.value.trim();
+      document.body.appendChild(overlay);
     }
-  });
 
-  // Save task changes
-  document.querySelectorAll('[data-task-id][data-field="title"]').forEach(input => {
-    const task = TASKS.find(t => t.id === input.dataset.taskId);
-    if (task && input.value.trim()) task.title = input.value.trim();
-  });
-  document.querySelectorAll('[data-task-id][data-field="frequency"]').forEach(select => {
-    const task = TASKS.find(t => t.id === select.dataset.taskId);
-    if (task) task.frequency = select.value;
-  });
+    async function handleSaveSettings() {
+      const goalInput = document.getElementById('settingsGoalInput');
+      const keyInput = document.getElementById('settingsKeyInput');
+      const status = document.getElementById('settingsStatus');
+      const goal = goalInput?.value.trim();
+      const key = keyInput?.value.trim();
 
-  // Persist custom areas/tasks to localStorage
-  localStorage.setItem('harada-quest-areas', JSON.stringify(AREAS));
-  localStorage.setItem('harada-quest-tasks', JSON.stringify(TASKS));
+      // Save goal
+      if (goal) { state.mainGoal = goal; saveState(); }
 
-  // Save/validate API key
-  if (key && key !== getApiKey()) {
-    status.className = 'settings-status'; status.textContent = 'Validating API key...';
-    try {
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
-        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 10, messages: [{ role: 'user', content: 'Say OK' }] })
+      // Save area name changes
+      document.querySelectorAll('[data-area-idx][data-field="name"]').forEach(input => {
+        const idx = parseInt(input.dataset.areaIdx);
+        if (AREAS[idx] && input.value.trim()) {
+          AREAS[idx].name = input.value.trim();
+        }
       });
-      if (resp.ok) {
-        saveApiKey(key);
-        status.className = 'settings-status ok'; status.textContent = 'Saved!';
-        setTimeout(() => { document.querySelector('.settings-overlay')?.remove(); updateUI(); }, 800);
-      } else {
-        const err = await resp.json().catch(() => ({}));
-        status.className = 'settings-status err'; status.textContent = err.error?.message || `Error: ${resp.status}`;
+
+      // Save task changes
+      document.querySelectorAll('[data-task-id][data-field="title"]').forEach(input => {
+        const task = TASKS.find(t => t.id === input.dataset.taskId);
+        if (task && input.value.trim()) task.title = input.value.trim();
+      });
+      document.querySelectorAll('[data-task-id][data-field="frequency"]').forEach(select => {
+        const task = TASKS.find(t => t.id === select.dataset.taskId);
+        if (task) task.frequency = select.value;
+      });
+
+      // Persist custom areas/tasks to localStorage
+      localStorage.setItem('harada-quest-areas', JSON.stringify(AREAS));
+      localStorage.setItem('harada-quest-tasks', JSON.stringify(TASKS));
+
+      // Save/validate API key
+      if (key && key !== getApiKey()) {
+        status.className = 'settings-status'; status.textContent = 'Validating API key...';
+        try {
+          const resp = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
+            body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 10, messages: [{ role: 'user', content: 'Say OK' }] })
+          });
+          if (resp.ok) {
+            saveApiKey(key);
+            status.className = 'settings-status ok'; status.textContent = 'Saved!';
+            setTimeout(() => { document.querySelector('.settings-overlay')?.remove(); updateUI(); }, 800);
+          } else {
+            const err = await resp.json().catch(() => ({}));
+            status.className = 'settings-status err'; status.textContent = err.error?.message || `Error: ${resp.status}`;
+          }
+          return;
+        } catch (e) {
+          status.className = 'settings-status err'; status.textContent = 'Network error.';
+          return;
+        }
       }
-      return;
-    } catch (e) {
-      status.className = 'settings-status err'; status.textContent = 'Network error.';
-      return;
+
+      // No key change, just close
+      document.querySelector('.settings-overlay')?.remove();
+      updateUI();
+      showToast('Settings saved');
     }
-  }
 
-  // No key change, just close
-  document.querySelector('.settings-overlay')?.remove();
-  updateUI();
-  showToast('Settings saved');
-}
+    // ===== COACH: CONVERSATION =====
+    const COACH_HISTORY_KEY = 'harada-quest-coach-history';
+    function getCoachHistory() { try { const h = localStorage.getItem(COACH_HISTORY_KEY); return h ? JSON.parse(h) : []; } catch (e) { return []; } }
+    function saveCoachHistory(h) { localStorage.setItem(COACH_HISTORY_KEY, JSON.stringify(h)); }
 
-// ===== COACH: CONVERSATION =====
-const COACH_HISTORY_KEY = 'harada-quest-coach-history';
-function getCoachHistory() { try { const h = localStorage.getItem(COACH_HISTORY_KEY); return h ? JSON.parse(h) : []; } catch(e) { return []; } }
-function saveCoachHistory(h) { localStorage.setItem(COACH_HISTORY_KEY, JSON.stringify(h)); }
+    // ===== COACH: DATA GATHERING =====
+    function gatherCoachingData() {
+      const now = new Date();
+      const areas = AREAS.map(area => {
+        const tasks = TASKS.filter(t => t.areaId === area.id);
+        const comp = getAreaCompletion(area.id);
+        const level = getLevel(state.areaXP[area.id] || 0);
+        const taskDetails = tasks.map(t => {
+          const sk = state.streaks[t.id];
+          return {
+            task: t.title, frequency: t.frequency,
+            completed: isCompleted(t.id, t.frequency),
+            isBoss: !!t.isBoss,
+            currentStreak: sk ? sk.current : 0,
+            longestStreak: sk ? sk.longest : 0,
+          };
+        });
+        return { name: area.name, level, completionPct: comp.pct, tasksDone: comp.done, tasksTotal: comp.total, tasks: taskDetails };
+      });
 
-// ===== COACH: DATA GATHERING =====
-function gatherCoachingData() {
-  const now = new Date();
-  const areas = AREAS.map(area => {
-    const tasks = TASKS.filter(t => t.areaId === area.id);
-    const comp = getAreaCompletion(area.id);
-    const level = getLevel(state.areaXP[area.id] || 0);
-    const taskDetails = tasks.map(t => {
-      const sk = state.streaks[t.id];
+      // Last 14 days activity
+      const last14 = [];
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const k = getPeriodKey('daily', d);
+        const cnt = Object.keys(state.completions).filter(c => c.endsWith(':' + k)).length;
+        last14.push({ date: k, count: cnt });
+      }
+
+      // Calculate urgency: uncompleted tasks running out of time
+      const daysLeftInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
+      const dayOfWeek = now.getDay(); // 0=Sun
+      const daysLeftInWeek = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+      const currentQuarter = Math.ceil((now.getMonth() + 1) / 3);
+      const quarterEndMonth = currentQuarter * 3;
+      const quarterEnd = new Date(now.getFullYear(), quarterEndMonth, 0);
+      const daysLeftInQuarter = Math.ceil((quarterEnd - now) / 864e5);
+
+      const urgentTasks = TASKS.filter(t => !isCompleted(t.id, t.frequency)).map(t => {
+        const area = AREAS.find(a => a.id === t.areaId);
+        let daysLeft, period;
+        if (t.frequency === 'weekly') { daysLeft = daysLeftInWeek; period = 'this week'; }
+        else if (t.frequency === 'monthly') { daysLeft = daysLeftInMonth; period = 'this month'; }
+        else if (t.frequency === 'quarterly') { daysLeft = daysLeftInQuarter; period = 'this quarter'; }
+        else return null; // daily tasks reset, not urgent in the same way
+        return { task: t.title, area: area?.name, frequency: t.frequency, daysLeft, period, isBoss: !!t.isBoss };
+      }).filter(Boolean).filter(t => {
+        // Flag as urgent: weekly with <=2 days, monthly with <=10 days, quarterly with <=20 days
+        if (t.frequency === 'weekly') return t.daysLeft <= 2;
+        if (t.frequency === 'monthly') return t.daysLeft <= 10;
+        if (t.frequency === 'quarterly') return t.daysLeft <= 20;
+        return false;
+      }).sort((a, b) => a.daysLeft - b.daysLeft);
+
       return {
-        task: t.title, frequency: t.frequency,
-        completed: isCompleted(t.id, t.frequency),
-        isBoss: !!t.isBoss,
-        currentStreak: sk ? sk.current : 0,
-        longestStreak: sk ? sk.longest : 0,
+        currentDateTime: now.toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }),
+        dayOfWeek: now.toLocaleDateString('en-US', { weekday: 'long' }),
+        dayOfMonth: now.getDate(),
+        daysLeftInMonth,
+        daysLeftInWeek,
+        daysLeftInQuarter,
+        overallLevel: getOverallLevel(),
+        totalXP: state.totalXP,
+        currentMonthAreas: areas,
+        dailyActivityLast14Days: last14,
+        urgentUncompletedTasks: urgentTasks,
       };
-    });
-    return { name: area.name, level, completionPct: comp.pct, tasksDone: comp.done, tasksTotal: comp.total, tasks: taskDetails };
-  });
+    }
 
-  // Last 14 days activity
-  const last14 = [];
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const k = getPeriodKey('daily', d);
-    const cnt = Object.keys(state.completions).filter(c => c.endsWith(':' + k)).length;
-    last14.push({ date: k, count: cnt });
-  }
+    // ===== COACH: API CALL =====
+    let coachLoading = false;
 
-  // Calculate urgency: uncompleted tasks running out of time
-  const daysLeftInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate();
-  const dayOfWeek = now.getDay(); // 0=Sun
-  const daysLeftInWeek = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
-  const currentQuarter = Math.ceil((now.getMonth() + 1) / 3);
-  const quarterEndMonth = currentQuarter * 3;
-  const quarterEnd = new Date(now.getFullYear(), quarterEndMonth, 0);
-  const daysLeftInQuarter = Math.ceil((quarterEnd - now) / 864e5);
-
-  const urgentTasks = TASKS.filter(t => !isCompleted(t.id, t.frequency)).map(t => {
-    const area = AREAS.find(a => a.id === t.areaId);
-    let daysLeft, period;
-    if (t.frequency === 'weekly') { daysLeft = daysLeftInWeek; period = 'this week'; }
-    else if (t.frequency === 'monthly') { daysLeft = daysLeftInMonth; period = 'this month'; }
-    else if (t.frequency === 'quarterly') { daysLeft = daysLeftInQuarter; period = 'this quarter'; }
-    else return null; // daily tasks reset, not urgent in the same way
-    return { task: t.title, area: area?.name, frequency: t.frequency, daysLeft, period, isBoss: !!t.isBoss };
-  }).filter(Boolean).filter(t => {
-    // Flag as urgent: weekly with <=2 days, monthly with <=10 days, quarterly with <=20 days
-    if (t.frequency === 'weekly') return t.daysLeft <= 2;
-    if (t.frequency === 'monthly') return t.daysLeft <= 10;
-    if (t.frequency === 'quarterly') return t.daysLeft <= 20;
-    return false;
-  }).sort((a, b) => a.daysLeft - b.daysLeft);
-
-  return {
-    currentDateTime: now.toLocaleString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }),
-    dayOfWeek: now.toLocaleDateString('en-US', { weekday: 'long' }),
-    dayOfMonth: now.getDate(),
-    daysLeftInMonth,
-    daysLeftInWeek,
-    daysLeftInQuarter,
-    overallLevel: getOverallLevel(),
-    totalXP: state.totalXP,
-    currentMonthAreas: areas,
-    dailyActivityLast14Days: last14,
-    urgentUncompletedTasks: urgentTasks,
-  };
-}
-
-// ===== COACH: API CALL =====
-let coachLoading = false;
-
-const COACH_SYSTEM = `You are the user's Sensei — a personal productivity mentor inspired by the Harada Method. The user tracks tasks across 8 life areas (Leadership, Creative Voice, Craft, Finance, Network, Family & Friends, Body, Mind) with daily/weekly/monthly/quarterly habits.
+    const COACH_SYSTEM = `You are the user's Sensei — a personal productivity mentor inspired by the Harada Method. The user tracks tasks across 8 life areas (Leadership, Creative Voice, Craft, Finance, Network, Family & Friends, Body, Mind) with daily/weekly/monthly/quarterly habits.
 
 Your style:
 - Talk like a supportive friend, casual but insightful
@@ -1536,164 +2879,165 @@ When answering follow-up questions, be conversational and helpful. You can refer
 
 Never use bullet points or lists. Write in natural flowing sentences like a text message from a friend.`;
 
-async function sendCoachMessage(userMessage) {
-  const key = getApiKey();
-  if (!key) { showSettings(); return; }
-  if (coachLoading) return;
+    async function sendCoachMessage(userMessage) {
+      const key = getApiKey();
+      if (!key) { showSettings(); return; }
+      if (coachLoading) return;
 
-  const history = getCoachHistory();
-  const coachData = gatherCoachingData();
+      const history = getCoachHistory();
+      const coachData = gatherCoachingData();
 
-  // Add user message to history
-  if (userMessage) {
-    history.push({ role: 'user', content: userMessage });
-  }
+      // Add user message to history
+      if (userMessage) {
+        history.push({ role: 'user', content: userMessage });
+      }
 
-  coachLoading = true;
-  saveCoachHistory(history);
-  updateUI();
+      coachLoading = true;
+      saveCoachHistory(history);
+      updateUI();
 
-  // Build messages array for API
-  const apiMessages = [];
+      // Build messages array for API
+      const apiMessages = [];
 
-  // First message always includes progress data
-  if (history.length === 0 || (history.length === 1 && !userMessage)) {
-    apiMessages.push({ role: 'user', content: 'Here is my current progress data. Give me my check-in:\n' + JSON.stringify(coachData) });
-  } else {
-    // Include data context in first message, then conversation
-    apiMessages.push({ role: 'user', content: 'Here is my progress data for context:\n' + JSON.stringify(coachData) });
-    apiMessages.push({ role: 'assistant', content: history.find(m => m.role === 'assistant')?.content || 'How can I help?' });
-    // Add remaining conversation turns (skip first assistant)
-    let skippedFirst = false;
-    for (const msg of history) {
-      if (msg.role === 'assistant' && !skippedFirst) { skippedFirst = true; continue; }
-      if (msg.role === 'assistant') apiMessages.push({ role: 'assistant', content: msg.content });
-      if (msg.role === 'user' && msg.content !== userMessage) apiMessages.push({ role: 'user', content: msg.content });
+      // First message always includes progress data
+      if (history.length === 0 || (history.length === 1 && !userMessage)) {
+        apiMessages.push({ role: 'user', content: 'Here is my current progress data. Give me my check-in:\n' + JSON.stringify(coachData) });
+      } else {
+        // Include data context in first message, then conversation
+        apiMessages.push({ role: 'user', content: 'Here is my progress data for context:\n' + JSON.stringify(coachData) });
+        apiMessages.push({ role: 'assistant', content: history.find(m => m.role === 'assistant')?.content || 'How can I help?' });
+        // Add remaining conversation turns (skip first assistant)
+        let skippedFirst = false;
+        for (const msg of history) {
+          if (msg.role === 'assistant' && !skippedFirst) { skippedFirst = true; continue; }
+          if (msg.role === 'assistant') apiMessages.push({ role: 'assistant', content: msg.content });
+          if (msg.role === 'user' && msg.content !== userMessage) apiMessages.push({ role: 'user', content: msg.content });
+        }
+        if (userMessage) apiMessages.push({ role: 'user', content: userMessage });
+      }
+
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 400,
+            temperature: 0.7,
+            system: COACH_SYSTEM,
+            messages: apiMessages
+          })
+        });
+
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          if (resp.status === 401) showToast('Invalid API key. Check Settings.');
+          else if (resp.status === 429) showToast('Rate limited. Try again in a minute.');
+          else showToast(err.error?.message || 'API error');
+          coachLoading = false; updateUI(); return;
+        }
+
+        const data = await resp.json();
+        const text = data.content?.[0]?.text || '';
+
+        history.push({ role: 'assistant', content: text, timestamp: Date.now() });
+        saveCoachHistory(history);
+      } catch (e) {
+        showToast('Network error. Check your connection.');
+      }
+
+      coachLoading = false;
+      updateUI();
     }
-    if (userMessage) apiMessages.push({ role: 'user', content: userMessage });
-  }
 
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true', 'content-type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
-        temperature: 0.7,
-        system: COACH_SYSTEM,
-        messages: apiMessages
-      })
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      if (resp.status === 401) showToast('Invalid API key. Check Settings.');
-      else if (resp.status === 429) showToast('Rate limited. Try again in a minute.');
-      else showToast(err.error?.message || 'API error');
-      coachLoading = false; updateUI(); return;
+    function startNewCoachSession() {
+      saveCoachHistory([]);
+      sendCoachMessage(null);
     }
 
-    const data = await resp.json();
-    const text = data.content?.[0]?.text || '';
+    function handleCoachInput(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        const input = e.target;
+        const msg = input.value.trim();
+        if (!msg) return;
+        input.value = '';
+        sendCoachMessage(msg);
+      }
+    }
 
-    history.push({ role: 'assistant', content: text, timestamp: Date.now() });
-    saveCoachHistory(history);
-  } catch (e) {
-    showToast('Network error. Check your connection.');
-  }
+    // ===== COACH: PANEL & RENDER =====
+    function openCoachPanel() {
+      document.getElementById('coachBackdrop').classList.add('open');
+      document.getElementById('coachPanel').classList.add('open');
+      renderCoachPanel();
+      setTimeout(() => document.getElementById('coachInput')?.focus(), 350);
+    }
+    function closeCoachPanel() {
+      document.getElementById('coachBackdrop').classList.remove('open');
+      document.getElementById('coachPanel').classList.remove('open');
+    }
 
-  coachLoading = false;
-  updateUI();
-}
+    function sendFromInput() {
+      const input = document.getElementById('coachInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+      input.value = '';
+      sendCoachMessage(msg);
+    }
 
-function startNewCoachSession() {
-  saveCoachHistory([]);
-  sendCoachMessage(null);
-}
+    function renderCoachPanel() {
+      const body = document.getElementById('coachPanelBody');
+      const inputBar = document.getElementById('coachInputBar');
+      const key = getApiKey();
+      const history = getCoachHistory();
 
-function handleCoachInput(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    const input = e.target;
-    const msg = input.value.trim();
-    if (!msg) return;
-    input.value = '';
-    sendCoachMessage(msg);
-  }
-}
-
-// ===== COACH: PANEL & RENDER =====
-function openCoachPanel() {
-  document.getElementById('coachBackdrop').classList.add('open');
-  document.getElementById('coachPanel').classList.add('open');
-  renderCoachPanel();
-  setTimeout(() => document.getElementById('coachInput')?.focus(), 350);
-}
-function closeCoachPanel() {
-  document.getElementById('coachBackdrop').classList.remove('open');
-  document.getElementById('coachPanel').classList.remove('open');
-}
-
-function sendFromInput() {
-  const input = document.getElementById('coachInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  sendCoachMessage(msg);
-}
-
-function renderCoachPanel() {
-  const body = document.getElementById('coachPanelBody');
-  const inputBar = document.getElementById('coachInputBar');
-  const key = getApiKey();
-  const history = getCoachHistory();
-
-  if (!key) {
-    body.innerHTML = `<div class="coach-empty">
+      if (!key) {
+        body.innerHTML = `<div class="coach-empty">
       <div class="coach-empty-icon">${icon('coach', 40)}</div>
       <div class="coach-empty-title">Set up your Sensei</div>
       <div class="coach-empty-desc">Add your Anthropic API key in Settings to get AI-powered guidance from your Sensei.</div>
       <button class="coach-btn" onclick="showSettings()">Open Settings</button>
     </div>`;
-    inputBar.style.display = 'none';
-    return;
-  }
+        inputBar.style.display = 'none';
+        return;
+      }
 
-  inputBar.style.display = 'flex';
+      inputBar.style.display = 'flex';
 
-  if (history.length === 0 && !coachLoading) {
-    body.innerHTML = `<div class="coach-empty">
+      if (history.length === 0 && !coachLoading) {
+        body.innerHTML = `<div class="coach-empty">
       <div class="coach-empty-icon">${icon('coach', 40)}</div>
       <div class="coach-empty-title">Ready when you are</div>
       <div class="coach-empty-desc">Start a conversation with your sensei for personalized guidance based on your progress.</div>
       <button class="coach-btn" onclick="startNewCoachSession()">Start Check-in</button>
     </div>`;
-    return;
-  }
+        return;
+      }
 
-  let html = '<div class="coach-chat">';
-  for (const msg of history) {
-    if (msg.role === 'assistant') {
-      html += `<div class="coach-bubble coach-msg">${msg.content}</div>`;
-    } else if (msg.role === 'user') {
-      html += `<div class="coach-bubble user-msg">${msg.content}</div>`;
+      let html = '<div class="coach-chat">';
+      for (const msg of history) {
+        if (msg.role === 'assistant') {
+          html += `<div class="coach-bubble coach-msg">${msg.content}</div>`;
+        } else if (msg.role === 'user') {
+          html += `<div class="coach-bubble user-msg">${msg.content}</div>`;
+        }
+      }
+      if (coachLoading) {
+        html += `<div class="coach-loading"><div class="coach-loading-dots"><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div></div></div>`;
+      }
+      html += '</div>';
+      body.innerHTML = html;
+
+      // Scroll to bottom
+      body.scrollTop = body.scrollHeight;
     }
-  }
-  if (coachLoading) {
-    html += `<div class="coach-loading"><div class="coach-loading-dots"><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div><div class="coach-loading-dot"></div></div></div>`;
-  }
-  html += '</div>';
-  body.innerHTML = html;
 
-  // Scroll to bottom
-  body.scrollTop = body.scrollHeight;
-}
+    function renderCoach() { renderCoachPanel(); }
 
-function renderCoach() { renderCoachPanel(); }
-
-// ===== INIT =====
-updateUI(); renderDashboard();
-</script>
+    // ===== INIT =====
+    updateUI(); renderDashboard();
+  </script>
 </body>
+
 </html>
