@@ -2310,6 +2310,8 @@
           if (state.completions[prevCk]) { sk.current = Math.max(0, sk.current - 1); sk.lastPeriod = prev; }
           else { sk.current = 0; sk.lastPeriod = null; }
         }
+        // Remove from recently completed so it can disappear from pending
+        recentlyCompletedPending.delete(taskId);
         saveState(); updateUI(); return;
       }
       if (!state.streaks[taskId]) state.streaks[taskId] = { current: 0, longest: 0, lastPeriod: null };
@@ -2319,6 +2321,11 @@
       const mult = getMultiplier(sk.current); const earned = Math.round(task.baseXP * mult);
       const oldLevel = getLevel(state.areaXP[task.areaId] || 0);
       state.completions[ck] = Date.now(); state.totalXP += earned; state.areaXP[task.areaId] = (state.areaXP[task.areaId] || 0) + earned;
+      // Keep non-daily tasks visible in pending view for undo
+      if (task.frequency !== 'daily') {
+        recentlyCompletedPending.add(taskId);
+        setTimeout(() => { recentlyCompletedPending.delete(taskId); updateUI(); }, 8000);
+      }
       saveState();
       showXPFloat(cardEl, earned, mult);
       if ([3, 7, 14, 30].includes(sk.current)) showToast(`${sk.current}-streak! ${mult}x multiplier`);
@@ -2408,13 +2415,16 @@
     }
 
     // Helper: area tasks grouped HTML
+    // Track recently completed pending tasks so they stay visible for undo
+    let recentlyCompletedPending = new Set();
+
     function areaTasksGroupHTML(areas_list, mode) {
       return areas_list.map(area => {
         let tasks;
         if (mode === 'daily') {
           tasks = TASKS.filter(t => t.areaId === area.id && t.frequency === 'daily');
         } else if (mode === 'pending') {
-          tasks = TASKS.filter(t => t.areaId === area.id && t.frequency !== 'daily' && !isCompleted(t.id, t.frequency));
+          tasks = TASKS.filter(t => t.areaId === area.id && t.frequency !== 'daily' && (!isCompleted(t.id, t.frequency) || recentlyCompletedPending.has(t.id)));
         } else {
           tasks = TASKS.filter(t => t.areaId === area.id);
         }
@@ -3039,8 +3049,9 @@ Never use bullet points or lists. Write in natural flowing sentences like a text
 
     function sendFromInput() {
       const input = document.getElementById('coachInput');
+      if (!input) { showToast('DEBUG: input not found'); return; }
       const msg = input.value.trim();
-      if (!msg) return;
+      if (!msg) { showToast('DEBUG: empty message'); return; }
       input.value = '';
       sendCoachMessage(msg);
     }
