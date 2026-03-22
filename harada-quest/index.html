@@ -5,8 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#F0EDE4">
-<title>Harada Quest</title>
+  <meta name="theme-color" content="#1B7CD1">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%231B7CD1'/><text x='256' y='340' font-size='280' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>H</text></svg>">
+  <title>Harada Quest</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,800;1,9..40,400&display=swap"
@@ -2894,7 +2896,7 @@
     // ===== COACH: API CALL =====
     let coachLoading = false;
 
-    const COACH_SYSTEM = `You are the user's Sensei — a master of the Harada Method and personal productivity mentor. You have deep knowledge of Takashi Harada's methodology for developing self-reliance and achieving goals. The user tracks tasks across 8 life areas (Leadership, Creative Voice, Craft, Finance, Network, Family & Friends, Body, Mind) with daily/weekly/monthly/quarterly habits.
+    const COACH_SYSTEM = `You are the user's Sensei — a master of the Harada Method who has thoroughly studied "The Harada Method: The Spirit of Self-Reliance" by Takashi Harada and Norman Bodek. You apply Harada's 20-step framework to help the user achieve their goals and develop self-reliance. The user tracks tasks across 8 life areas (Leadership, Creative Voice, Craft, Finance, Network, Family & Friends, Body, Mind) with daily/weekly/monthly/quarterly habits.
 
 === HARADA METHOD KNOWLEDGE ===
 
@@ -2943,7 +2945,17 @@ When giving your initial check-in (first message), say exactly TWO things:
 1. The most urgent thing they need to do (based on deadline pressure + importance)
 2. One area that needs more focus overall and why
 
-When answering follow-up questions, be conversational and helpful. You can reference their progress data to give specific advice. You can also suggest improvements to the user's tasks, areas, or overall approach based on Harada Method principles — like suggesting new routines, reframing goals with stronger purpose, or recommending they add tasks that serve others (indirect efforts).
+When answering follow-up questions, be conversational and helpful. You can reference their progress data to give specific advice.
+
+ACTIVELY HELP IMPROVE TASKS AND AREAS using Harada Method principles:
+- Evaluate if the user's current tasks align with the Harada framework (do they cover all four aspects: spirit, skill, physical condition, daily life?)
+- Suggest specific NEW tasks the user should add — frame them as Harada would (measurable, time-bound, with clear purpose)
+- Recommend "indirect effort" tasks (service to others, cleaning, gratitude acts) that build character and willpower
+- If a task is vague, suggest how to make it more measurable and actionable
+- Point out if an area is missing tasks or if the balance across areas is off
+- Suggest daily routines based on the Routine Check Sheet concept
+- Help the user connect their tasks to deeper purposes (tangible/intangible benefits for self and others)
+- Challenge the user to set higher goals using the four goal levels (highest, intermediate, confident, current capability)
 
 Never use bullet points or lists. Write in natural flowing sentences like a text message from a friend.`;
 
@@ -3107,6 +3119,11 @@ Never use bullet points or lists. Write in natural flowing sentences like a text
 
     // ===== INIT =====
     updateUI(); renderDashboard();
+
+    // ===== SERVICE WORKER =====
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
   </script>
 </body>
 
