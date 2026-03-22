@@ -2135,12 +2135,12 @@
   </button>
 
   <!-- Coach Side Panel -->
-  <div class="coach-panel-backdrop" id="coachBackdrop" onclick="closeCoachPanel()"></div>
-  <div class="coach-panel" id="coachPanel">
+  <div class="coach-panel-backdrop" id="coachBackdrop" onclick="closeCoachPanel()" onmousedown="event.stopPropagation()"></div>
+  <div class="coach-panel" id="coachPanel" onclick="event.stopPropagation()">
     <div class="coach-panel-header">
       <div class="coach-panel-title">Your Sensei</div>
       <div style="display:flex;align-items:center;gap:6px;">
-        <button class="coach-new-btn" onclick="startNewCoachSession()">New chat</button>
+        <button type="button" class="coach-new-btn" onclick="event.stopPropagation(); startNewCoachSession();">New chat</button>
         <div class="coach-panel-close" onclick="closeCoachPanel()">
           <svg viewBox="0 0 24 24">
             <path d="M18 6L6 18M6 6l12 12" />
@@ -2151,7 +2151,7 @@
     <div class="coach-panel-body" id="coachPanelBody"></div>
     <div class="coach-panel-input" id="coachInputBar">
       <input placeholder="Ask your sensei..." onkeydown="handleCoachInput(event)" id="coachInput" />
-      <button class="coach-send-btn" onclick="sendFromInput()">
+      <button type="button" class="coach-send-btn" onclick="event.stopPropagation(); sendFromInput();">
         <svg viewBox="0 0 24 24">
           <path d="M22 2L11 13M22 2l-7 20-4-9-9-4z" />
         </svg>
@@ -2297,9 +2297,19 @@
       const task = TASKS.find(t => t.id === taskId); if (!task) return;
       const period = getPeriodKey(task.frequency); const ck = `${taskId}:${period}`;
       if (state.completions[ck]) {
+        // Undo: remove completion, reverse XP, and undo streak
+        const sk = state.streaks[taskId] || { current: 0, longest: 0, lastPeriod: null };
+        const m = getMultiplier(sk.current); const xp = Math.round(task.baseXP * m);
         delete state.completions[ck];
-        const sk = state.streaks[taskId] || { current: 0 }; const m = getMultiplier(sk.current); const xp = Math.round(task.baseXP * m);
-        state.totalXP = Math.max(0, state.totalXP - xp); state.areaXP[task.areaId] = Math.max(0, (state.areaXP[task.areaId] || 0) - xp);
+        state.totalXP = Math.max(0, state.totalXP - xp);
+        state.areaXP[task.areaId] = Math.max(0, (state.areaXP[task.areaId] || 0) - xp);
+        // Undo the streak increment
+        if (sk.lastPeriod === period) {
+          const prev = getPrevPeriod(task.frequency, period);
+          const prevCk = `${taskId}:${prev}`;
+          if (state.completions[prevCk]) { sk.current = Math.max(0, sk.current - 1); sk.lastPeriod = prev; }
+          else { sk.current = 0; sk.lastPeriod = null; }
+        }
         saveState(); updateUI(); return;
       }
       if (!state.streaks[taskId]) state.streaks[taskId] = { current: 0, longest: 0, lastPeriod: null };
@@ -2359,6 +2369,10 @@
           else if (active.id === 'view-area-detail') renderAreaDetail(active.dataset.areaId);
           else if (active.id === 'view-monthly') renderMonthly();
         }
+      }
+      // Re-render coach panel if it's open
+      if (document.getElementById('coachPanel').classList.contains('open')) {
+        renderCoachPanel();
       }
     }
     function updateGlobalBar() {
@@ -2995,6 +3009,7 @@ Never use bullet points or lists. Write in natural flowing sentences like a text
     }
 
     function startNewCoachSession() {
+      if (coachLoading) return;
       saveCoachHistory([]);
       sendCoachMessage(null);
     }
@@ -3041,7 +3056,7 @@ Never use bullet points or lists. Write in natural flowing sentences like a text
       <div class="coach-empty-icon">${icon('coach', 40)}</div>
       <div class="coach-empty-title">Set up your Sensei</div>
       <div class="coach-empty-desc">Add your Anthropic API key in Settings to get AI-powered guidance from your Sensei.</div>
-      <button class="coach-btn" onclick="showSettings()">Open Settings</button>
+      <button type="button" class="coach-btn" onclick="event.stopPropagation(); showSettings();">Open Settings</button>
     </div>`;
         inputBar.style.display = 'none';
         return;
@@ -3054,7 +3069,7 @@ Never use bullet points or lists. Write in natural flowing sentences like a text
       <div class="coach-empty-icon">${icon('coach', 40)}</div>
       <div class="coach-empty-title">Ready when you are</div>
       <div class="coach-empty-desc">Start a conversation with your sensei for personalized guidance based on your progress.</div>
-      <button class="coach-btn" onclick="startNewCoachSession()">Start Check-in</button>
+      <button type="button" class="coach-btn" onclick="event.stopPropagation(); startNewCoachSession();">Start Check-in</button>
     </div>`;
         return;
       }
